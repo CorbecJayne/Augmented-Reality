@@ -1,11 +1,11 @@
 #include<opencv2/opencv.hpp>
 #include<iostream>
+#include "PoseEstimation.h"
 
 
 using namespace cv;
 using namespace std;
 
-#define USE_CAMERA 1
 
 #define EX5 1
 #define EX5_RAW 0
@@ -105,7 +105,7 @@ Mat calculate_Stripe(double dx, double dy, MyStrip & st) {
 	/*if (st.stripeLength % 2 == 0)
 		st.stripeLength++;*/
 
-	// E.g. stripeLength = 5 --> from -2 to 2: Shift -> half top, the other half bottom
+		// E.g. stripeLength = 5 --> from -2 to 2: Shift -> half top, the other half bottom
 	st.nStop = st.stripeLength >> 1;
 	//st.nStop = st.stripeLength / 2;
 	st.nStart = -st.nStop;
@@ -130,7 +130,7 @@ Mat calculate_Stripe(double dx, double dy, MyStrip & st) {
 
 int main() {
 	Mat frame;
-	VideoCapture cap(USE_CAMERA);
+	VideoCapture cap(0);
 
 	const string streamWindow = "Stream";
 
@@ -545,6 +545,7 @@ int main() {
 
 				// Added in sheet 4 Ex9 (c)- End *******************************************************************
 
+
 			} // End of the loop to extract the exact corners
 
 			// Added in sheet 4 Ex10 (a)- Start *****************************************************************
@@ -563,6 +564,8 @@ int main() {
 			homographyMatrix = getPerspectiveTransform(corners, targetCorners);
 
 			// Added in sheet 4 Ex10 (a)- End *******************************************************************
+
+
 
 			// Added in sheet 4 Ex10 (b)- Start *****************************************************************
 
@@ -642,14 +645,16 @@ int main() {
 
 			// Search for the smallest marker ID
 			code = codes[0];
-			for (int i = 1; i < 4; ++i) {
+			int side = 0;
+			for (int i = 0; i < 4; ++i) {
 				if (codes[i] < code) {
 					code = codes[i];
+					side = i;
 				}
 			}
 
 			// Print ID
-			printf("Found: %04x\n", code);
+			//printf("Found: %04x\n", code);
 
 			// Show the first detected marker in the image
 			if (isFirstMarker) {
@@ -663,6 +668,22 @@ int main() {
 
 			// -----------------------------
 
+			Point2f sorted[4] = {};
+
+			int point = (side - 1) % 4;
+			for (int i = 0; i < 4; ++i) {
+				sorted[i] = corners[point];
+				point = (point + 1) % 4;
+			}
+			float result[16] = {};
+			estimateSquarePose(result, sorted, 0.045);
+			if (code == 0x1228) {
+				std::cout << "matrix:" << std::endl;
+				for (int iter = 1; iter < 4; iter++)
+				{
+					std::cout << *(result + (iter * 4) - 1) << std::endl;
+				}
+			}
 			// -----------------------------
 		}
 
