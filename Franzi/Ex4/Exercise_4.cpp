@@ -65,7 +65,6 @@ int subpixSampleSafe(const Mat& pSrc, const Point2f& p) {
 }
 
 
-// Added in Sheet 3 - Ex7 (a) Start *****************************************************************
 Mat calculate_Stripe(double dx, double dy, MyStrip & st) {
 	// Norm (euclidean distance)
 	double diffLength = sqrt(dx * dx + dy * dy);
@@ -161,7 +160,9 @@ bool LineLineIntersect(double x1, double y1, //Line 1 start
     return true; //All OK
 }
 
-void drawEdges(Mat img, vector<Point> collectLinePoints){
+vector<Point> drawEdges(Mat img, vector<Point> collectLinePoints){
+	vector<Point> edges;
+
 	for(int i = 0; i < collectLinePoints.size(); i=i+2){
 
 		Point l11 = collectLinePoints.at(i);
@@ -175,16 +176,54 @@ void drawEdges(Mat img, vector<Point> collectLinePoints){
 			double edgex;
 			double edgey;
 			if(LineLineIntersect(l11.x, l11.y, l12.x, l12.y, l21.x, l21.y, l22.x, l22.y, edgex, edgey)){
-				Point center;
-				center.x = edgex;
-				center.y = edgey;
-				circle(img, center, 3, CV_RGB(255, 0, 0), 2);
+				if((edgex > 0) && (edgey > 0)){
+					Point center;
+					center.x = edgex;
+					center.y = edgey;
+					circle(img, center, 3, CV_RGB(255, 0, 0), 2);
+					edges.push_back(center);
+				}
 			}
 		}
 	}
+	return edges;
 }
 
 
+Mat perspective_transformation(Mat image, vector<Point> edges)
+{
+	vector<Point> goalpoints;
+	goalpoints.push_back(Point(-0.5, -0.5));
+	goalpoints.push_back(Point(-0.5, 5.5));
+	goalpoints.push_back(Point(5.5, 5.5));
+	goalpoints.push_back(Point(5.5, -0.5));
+
+	cout << edges << endl;
+
+	Mat transformed = getPerspectiveTransform(goalpoints, edges);
+	Mat output(Size(6,6), CV_32FC2);
+	// warpPerspective(image, output, transformed, Size(6,6));
+	return output;
+}
+
+bool isMarker(Mat marker){
+	for(int i = 0; i< 6; i++){
+		// cout << marker.at<double>(0,0) << endl;
+		// left, top, right, bottom
+		// if( (marker[i][1] != CV_RGB(255, 0, 0)) || (marker[1][i] != CV_RGB(255, 0, 0)) || (marker[i][4] != CV_RGB(255, 0, 0)) || (marker[4][i] != CV_RGB(255, 0, 0))){
+		// 	return false ;
+		// } 
+	}
+	return true;
+}
+
+bool is_near_black(int value){
+	return true;
+}
+
+void print_identifier(Mat marker){
+	cout << "identifier" << endl;
+}
 
 int main() {
 	Mat frame;
@@ -385,19 +424,21 @@ int main() {
 
 				Point p1, p2;
 				imgFiltered = drawLines(imgFiltered, collectRealPoints, i, p1, p2);
-
-				// cout << "Angekommen2" << endl;
 				
 				collectLinePoints.push_back(p1);
 				collectLinePoints.push_back(p2);
 
-				// if(collectLinePoints.size() /2 != 0){
-				// 	break;
-				// }
-
 			}
 
-			drawEdges(imgFiltered, collectLinePoints);
+			vector<Point> edges = drawEdges(imgFiltered, collectLinePoints);
+			if(edges.size() == 4)
+			{
+				Mat marker = perspective_transformation(imgFiltered, edges);
+				if(isMarker(marker)){
+					print_identifier(marker);
+				}
+			}
+
 		}
 
 		imshow(contoursWindow, imgFiltered);
