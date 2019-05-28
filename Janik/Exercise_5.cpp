@@ -654,7 +654,7 @@ int main() {
 			}
 
 			// Print ID
-			//printf("Found: %04x\n", code);
+			printf("Found: %04x\n", code);
 
 			// Show the first detected marker in the image
 			if (isFirstMarker) {
@@ -670,19 +670,17 @@ int main() {
 
 			Point2f sorted[4] = {};
 
-			int point = (side - 1) % 4;
+			int point = (side + 3) % 4;
 			for (int i = 0; i < 4; ++i) {
-				sorted[i] = corners[point];
-				point = (point + 1) % 4;
+				sorted[i] = corners[side];
+				side = (side + 1) % 4;
 			}
 			float result[16] = {};
 			estimateSquarePose(result, sorted, 0.045);
-			if (code == 0x1228) {
-				std::cout << "matrix:" << std::endl;
-				for (int iter = 1; iter < 4; iter++)
-				{
-					std::cout << *(result + (iter * 4) - 1) << std::endl;
-				}
+			std::cout << "matrix:" << std::endl;
+			for (int iter = 1; iter < 4; iter++)
+			{
+				std::cout << *(result + (iter * 4) - 1) << std::endl;
 			}
 			// -----------------------------
 		}
