@@ -1,0 +1,41 @@
+Idee: wie Gehirnjogging
+
+* auswählen, welche Form anders ist / anders gedreht ist
+	* ein Marker pro Form, vlt 4
+	
+* sieht mehrere Wörter am Anfang und muss danach bei gezeigten Wörtern sagen, 
+ob es dabei war / welches von den dreien dabei war
+	* Wörter in einer Konsole
+	* 2 oder 3 Marker, um das Wort auszuwählen, welches nicht dabei war
+
+* simon says
+	* 4 Farben/ Formen
+	* vlt eins dann immer in die Kamera zeigen
+
+* Wissensfragen / Quiz
+	* ein Marker pro Antwortmöglichkeit
+	* vlt eins dann immer in die Kamera zeigen
+	
+
+
+
+Idee: Wissensfragen / Quiz als eigenes Spiel
+	* Rundenbasiert 
+	* ein Marker pro Antwort
+
+
+
+* Marker als Curser?
+
+* Projekte alle zusammen implementieren oder die Spiele aufteilen?
+
+
+-------------------------------------------------------------------------------
+
+
+* Start mit Quiz für ein Spieler: Spielfeld für 4 Antwortmöglichkeiten und Spieler legen sein Marker 
+auf die gewünschte Antwort
+	* Timer?
+	* über jedem Marker "schwebt" die Spielernummer
+
+* Donnerstag 20 Uhr treffen
