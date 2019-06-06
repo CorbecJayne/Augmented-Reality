@@ -687,15 +687,15 @@ void computeJacobian(float* pResult, float* pParam, const CvPoint3D32f& p3D, flo
 
 	float t20 = pParam[3] * p3D.z + pParam[0] * p3D.y - pParam[1] * p3D.x;
 
-	float t22 = -t4*pParam[2] + t10*pParam[1] - t15*pParam[0] - t20*pParam[3] - pParam[6];
+	float t22 = -t4 * pParam[2] + t10 * pParam[1] - t15 * pParam[0] - t20 * pParam[3] - pParam[6];
 
 	float t23 = 1.0f / t22;
 
 	float t24 = 2.0f*f*t4*t23;
 
-	float t30 = f*(t4*pParam[0] + t10*pParam[3] - t15*pParam[2] + t20*pParam[1] + pParam[4]);
+	float t30 = f * (t4*pParam[0] + t10 * pParam[3] - t15 * pParam[2] + t20 * pParam[1] + pParam[4]);
 
-	float t31 = t22*t22;
+	float t31 = t22 * t22;
 
 	float t32 = 1.0f / t31;
 
@@ -709,37 +709,37 @@ void computeJacobian(float* pResult, float* pParam, const CvPoint3D32f& p3D, flo
 
 	float t48 = -2.0f*t32*t20;
 
-	float t51 = f*t23;
+	float t51 = f * t23;
 
-	float t60 = f*(t4*pParam[1] + t10*pParam[2] + t15*pParam[3] - t20*pParam[0] + pParam[5]);
+	float t60 = f * (t4*pParam[1] + t10 * pParam[2] + t15 * pParam[3] - t20 * pParam[0] + pParam[5]);
 
-	pResult[0] = t24 - t30*t33;
+	pResult[0] = t24 - t30 * t33;
 
-	pResult[1] = 2.0f*f*t20*t23 - t30*t38;
+	pResult[1] = 2.0f*f*t20*t23 - t30 * t38;
 
-	pResult[2] = -2.0f*f*t15*t23 - t30*t43;
+	pResult[2] = -2.0f*f*t15*t23 - t30 * t43;
 
-	pResult[3] = t47 - t30*t48;
+	pResult[3] = t47 - t30 * t48;
 
 	pResult[4] = t51;
 
 	pResult[5] = 0.0f;
 
-	pResult[6] = t30*t32;
+	pResult[6] = t30 * t32;
 
-	pResult[7 + 0] = -2.0f*f*t20*t23 - t60*t33;
+	pResult[7 + 0] = -2.0f*f*t20*t23 - t60 * t33;
 
-	pResult[7 + 1] = t24 - t60*t38;
+	pResult[7 + 1] = t24 - t60 * t38;
 
-	pResult[7 + 2] = t47 - t60*t43;
+	pResult[7 + 2] = t47 - t60 * t43;
 
-	pResult[7 + 3] = 2.0f*f*t15*t23 - t60*t48;
+	pResult[7 + 3] = 2.0f*f*t15*t23 - t60 * t48;
 
 	pResult[7 + 4] = 0.0f;
 
 	pResult[7 + 5] = t51;
 
-	pResult[7 + 6] = t60*t32;
+	pResult[7 + 6] = t60 * t32;
 
 }
 
@@ -1053,7 +1053,7 @@ void estimateSquarePose(float* result, const cv::Point2f* p2D_, float markerSize
 
 	CvPoint2D32f *p2D = new CvPoint2D32f[4];
 
-	for (size_t i = 0; i<4; i++) {
+	for (size_t i = 0; i < 4; i++) {
 
 		p2D[i].x = p2D_[i].x;
 
