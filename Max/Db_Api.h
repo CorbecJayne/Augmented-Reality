@@ -6,6 +6,7 @@ class Db_Api{
 public:
 
     Db_Api()= default;
+    ~Db_Api()= default;
 
     const std::vector<Question> &getQuestions() const;
 

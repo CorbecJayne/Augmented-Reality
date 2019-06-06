@@ -1,3 +1,9 @@
+/* This code uses the API provided by https://opentdb.com/
+ * The API is covered by this license: https://creativecommons.org/licenses/by-sa/4.0/
+ * No changes to the provided data were made.
+ */
+
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -6,14 +12,6 @@
 #include "Db_Api.h"
 
 using namespace std;
-
-//static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
-//void parseQuestions(const string& input,int amount);
-//static void cleanQuestions();
-//string replaceAll(std::string str, const std::string& from, const std::string& to);
-//void printQuestions();
-
-//vector<Question>questions;
 
 void Db_Api::retrieveQuestions(int amount,int category) {
     CURL *curl;
@@ -140,4 +138,3 @@ string Db_Api::replaceAll(std::string str, const std::string& from, const std::s
 const vector<Question> &Db_Api::getQuestions() const {
     return questions;
 }
-
