@@ -16,3 +16,9 @@ time_t Player::getTime() const {
 int Player::getArea() const {
     return area;
 }
+
+Player::Player(time_t time) : time(time) {}
+
+int Player::getPoints() const {
+    return points;
+}

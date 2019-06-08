@@ -7,10 +7,20 @@ class Player_Manager{
 	
 	//pointer ?
 	std::vector<Player> players;
+
+
 	
 	public:
-	
-	//Constructs 4 Players markerId & playerId
+
+    Player_Manager();
+
+    virtual ~Player_Manager();
+
+    const std::vector<Player> &getPlayers() const;
+
+    void setPlayers(const std::vector<Player> &players);
+
+    //Constructs 4 Players markerId & playerId
 	
 	
 	
@@ -20,7 +30,11 @@ class Player_Manager{
 	
 	std::string get_scores();
 	
-	//iterate over players and compare timestamps
+	/*iterate over players and compare timestamps
+    * sorts players vector by player timestamp
+    * players get 1000,750,500,250 points
+    * only if they are correct
+    */
 	void give_score();
 	
 	

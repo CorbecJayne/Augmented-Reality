@@ -4,7 +4,7 @@
 
 class Player
 {
-	const int markerId;
+    int markerId;
 	cv::Point positionPlayer;
 	int playerId;
 	time_t time;
@@ -14,10 +14,9 @@ class Player
 
 
 public:
-	Player();
-	~Player();
-	
-	//getter and setter
+    Player(time_t time);
+
+    //getter and setter
 	
 	void add_points(int amount);
 
@@ -26,4 +25,6 @@ public:
     time_t getTime() const;
 
     int getArea() const;
+
+    int getPoints() const;
 };
