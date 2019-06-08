@@ -20,6 +20,10 @@ void Db_Api::retrieveQuestions(int amount,int category) {
     stringstream stream;
     string query;
     const string type="multiple";     //4 answers , #REQUIRED
+    if(amount<10||amount>50){
+        cout<<"amount must be [10,50]"<<endl;
+        return;
+    }
     if(category==-1){
         stream << "https://opentdb.com/api.php?amount=" << amount << "&type=" << type;
     }else {
@@ -44,9 +48,11 @@ void Db_Api::retrieveQuestions(int amount,int category) {
     }else{
         cout<<"curl failed"<<endl;
     }
+    replaceAll(readBuffer,"&quot;","'");
+    replaceAll(readBuffer,"&#039;","'");
+    replaceAll(readBuffer,"&iacute;","í");
     parseQuestions(readBuffer,amount);
-    cleanQuestions();
-    //printQuestions();
+    //cleanQuestions();
 }
 
 void Db_Api::printQuestions(){
@@ -115,6 +121,7 @@ void Db_Api::parseQuestions(const string& input,int amount){
         question.setWrongAnswerOne(wrong_answer_one);
         question.setWrongAnswerTwo(wrong_answer_two);
         question.setWrongAnswerThree(wrong_answer_three);
+        question.setCorrectPosition(rand()%4);
         questions.push_back(question);
     }
 }
@@ -133,6 +140,14 @@ string Db_Api::replaceAll(std::string str, const std::string& from, const std::s
         pos =str.find(from, pos + to.size());
     }
     return str;
+}
+
+Question Db_Api::getNextQuestion() {
+    if(counter<questions.size()) {
+        return questions[counter++];
+    }else{
+        cout<<"no questions left"<<endl;
+    }
 }
 
 const vector<Question> &Db_Api::getQuestions() const {

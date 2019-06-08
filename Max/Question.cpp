@@ -43,3 +43,11 @@ const string &Question::getWrongAnswerThree() const {
 void Question::setWrongAnswerThree(const string &wrongAnswerThree) {
     wrong_answer_three = wrongAnswerThree;
 }
+
+int Question::getCorrectPosition() const {
+    return correct_position;
+}
+
+void Question::setCorrectPosition(const int &pos) {
+    correct_position=pos;
+}

@@ -1,8 +1,10 @@
 #include "Db_Api.h"
+#include <iostream>
+
+using namespace std;
 
 int main(){
     Db_Api dbApi;
     dbApi.retrieveQuestions();
-    dbApi.printQuestions();
     return 0;
 }

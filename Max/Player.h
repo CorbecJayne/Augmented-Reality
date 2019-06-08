@@ -20,4 +20,10 @@ public:
 	//getter and setter
 	
 	void add_points(int amount);
+
+	void set_time(time_t t);
+
+    time_t getTime() const;
+
+    int getArea() const;
 };
