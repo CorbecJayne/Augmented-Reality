@@ -1,10 +1,12 @@
+#include <opencv2/opencv.hpp>
+
 class Area{
 
-	Point position;
-	Point size;
+	cv::Point position;
+	cv::Point size;
 	
 	//position in display
 	int id;
 	
 	
-}
+};
