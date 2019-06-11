@@ -1,5 +1,5 @@
-#include "Player_Manager.h"
-#include "Player.h"
+#include "headers/Player_Manager.h"
+#include "headers/Player.h"
 
 using namespace std;
 

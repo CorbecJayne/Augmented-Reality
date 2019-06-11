@@ -1,5 +1,5 @@
 
-#include "Player.h"
+#include "headers/Player.h"
 
 Player::Player(time_t time) : time(time) {}
 

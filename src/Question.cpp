@@ -2,7 +2,7 @@
 // Created by evo on 06.06.19.
 //
 #include <string>
-#include "Question.h"
+#include "headers/Question.h"
 using namespace std;
 const string &Question::getQuestion() const {
     return question;
