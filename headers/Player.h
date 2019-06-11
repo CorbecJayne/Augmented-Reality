@@ -25,6 +25,8 @@ public:
 
 	Player(int player_Id, int marker_Id);
 
+	Player(cv::Point position_player, int marker_Id, time_t time);
+
 	/**
 	 * @brief Reset position, area, time, locked_in
 	 * 

@@ -38,5 +38,9 @@ public:
     void setCorrectPosition(const int &pos);
 
     int getCorrectPosition() const;
+
+    //to string function: question + answer possibilities - use random position of correct_position in string
+    //TODO
+    const std::string &show_question() const;
 };
 

@@ -51,3 +51,4 @@ int Question::getCorrectPosition() const {
 void Question::setCorrectPosition(const int &pos) {
     correct_position=pos;
 }
+

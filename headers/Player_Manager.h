@@ -63,4 +63,10 @@ class Player_Manager{
 	 * @return false 
 	 */
 	bool all_locked();
+
+	/**
+	 * @brief Set lock, time, position and areas of player if necessary
+	 * 
+	 */
+	void update_player_info(vector<Player> player);
 };

@@ -12,6 +12,7 @@ void Player_Manager::give_score() {
     int score=1000;
     for(auto & player : players){
         //TODO: maybe get the correct area from Question through main as parameter when function is called?
+        //TODO: to something if both player answered at the same time
         // where is correct area stored?
         // "if player is correct"
         if(player.get_area()){
@@ -51,7 +52,7 @@ void Player_Manager::reset_players(){
 
 void Player_Manager::set_areas(){
     for(auto & player: players){
-        //TODO
+        //TODO: UI_Manager?
         player.get_position_player();
         player.set_area(1);
     }
@@ -66,7 +67,14 @@ bool Player_Manager::all_locked(){
 
 std::string Player_Manager::get_scores(){
     std::string result = " | ";
+    //TODO sort players based on scores
     for(auto & player: players){
         result += std::to_string(player.get_player_id()) + ": " + std::to_string(player.get_points()) + " | ";
     }
+}
+
+void Player_Manager::update_player_info(vector<Player> player){
+    //TODO
+    // be aware of wrong markerids
+    set_areas();
 }
