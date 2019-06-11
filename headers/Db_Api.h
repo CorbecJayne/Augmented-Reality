@@ -3,9 +3,13 @@
 #include "Question.h"
 class Db_Api{
     std::vector<Question>questions;
+    int counter;
 public:
 
-    Db_Api()= default;
+    Db_Api(){
+        counter=0;
+    }
+    ~Db_Api()= default;
 
     const std::vector<Question> &getQuestions() const;
 
@@ -27,6 +31,6 @@ public:
     void cleanQuestions();
 
     void printQuestions();
-	
-	vector<string> get_Next_Question();
+
+    Question getNextQuestion();
 };

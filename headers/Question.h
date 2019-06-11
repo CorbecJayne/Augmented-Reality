@@ -1,4 +1,7 @@
+
 #include <string>
+#include <experimental/random>
+
 
 class Question {
     std::string question;
@@ -6,11 +9,12 @@ class Question {
     std::string wrong_answer_one;
     std::string wrong_answer_two;
     std::string wrong_answer_three;
-	
-	// area id
-	int correct_position;
+
+    //area id
+    int correct_position;
 
 public:
+
     const std::string &getQuestion() const;
 
     void setQuestion(const std::string &question);
@@ -30,8 +34,9 @@ public:
     const std::string &getWrongAnswerThree() const;
 
     void setWrongAnswerThree(const std::string &wrongAnswerThree);
-	
-	int get_correct_position();
-	
-	//constructor with random value for correct position
+
+    void setCorrectPosition(const int &pos);
+
+    int getCorrectPosition() const;
 };
+
