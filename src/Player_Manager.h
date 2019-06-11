@@ -5,41 +5,62 @@
 
 class Player_Manager{
 	
-	//pointer ?
 	std::vector<Player> players;
 
-
-	
 	public:
 
+	/**
+	 * @brief Constructs 4 Players with markerId & playerId
+	 * 
+	 */
     Player_Manager();
 
     virtual ~Player_Manager();
 
-    const std::vector<Player> &getPlayers() const;
+	/**
+	 * @brief Get all player
+	 * 
+	 * @return const std::vector<Player>& 
+	 */
+    const std::vector<Player> &get_players() const;
 
-    void setPlayers(const std::vector<Player> &players);
-
-    //Constructs 4 Players markerId & playerId
+	/**
+	 * @brief Set the players
+	 * 
+	 * @param players 
+	 */
+    void set_players(const std::vector<Player> &players);
 	
-	
-	
-	
-	//resets position and timestamp
+	/**
+	 * @brief Resets position and timestamp of all player
+	 * 
+	 */
 	void reset_players();
-	
+
+	/**
+	 * @brief Generates a nice announcement of the player scores
+	 * 
+	 * @return std::string 
+	 */
 	std::string get_scores();
-	
-	/*iterate over players and compare timestamps
-    * sorts players vector by player timestamp
-    * players get 1000,750,500,250 points
-    * only if they are correct
-    */
+   	
+	/**
+	 * @brief Sets the scores of all players based on the timestamps. Possible points: 1000,750,500,250
+	 * 
+	 */
 	void give_score();
 	
-	
-	//iterate ..
+	/**
+	 * @brief Set the area of the player based on its position
+	 * 
+	 */
 	void set_areas();
 	
+	/**
+	 * @brief Checks if all player have answered
+	 * 
+	 * @return true 
+	 * @return false 
+	 */
 	bool all_locked();
 };

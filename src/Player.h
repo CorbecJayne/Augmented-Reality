@@ -4,27 +4,114 @@
 
 class Player
 {
-    int markerId;
-	cv::Point positionPlayer;
-	int playerId;
-	time_t time;
-	bool locked_in;
+	// ID of the player
+	int player_Id;
+	// ID of the marker
+    int marker_Id;
+	// Total points of the player, default:0
 	int points;
+	// Position of the marker on the display, default: (-1,-1)
+	cv::Point position_player;
+	// the answer area based on the position, default:-1
 	int area;
+	// Timestamp when the answer/ answer was detected , default: -1
+	time_t time;
+	// If the current position/ answer counts as final, default:false
+	bool locked_in;
 
 
 public:
     Player(time_t time);
 
-    //getter and setter
+	Player(int player_Id, int marker_Id);
+
+	/**
+	 * @brief Reset position, area, time, locked_in
+	 * 
+	 */
+	void reset();
+
+	/**
+	 * @brief Get the player id
+	 * 
+	 * @return int 
+	 */
+	int get_player_id() const;
 	
+	/**
+	 * @brief Add amount to points
+	 * 
+	 * @param amount 
+	 */
 	void add_points(int amount);
 
+	/**
+	 * @brief Get the points
+	 * 
+	 * @return int 
+	 */
+    int get_points() const;
+
+	/**
+	 * @brief Get the position_player
+	 * 
+	 * @return cv::Point 
+	 */
+    cv::Point get_position_player() const;
+
+	/**
+	 * @brief Set the position_player
+	 * 
+	 * @param position 
+	 */
+	void set_position_player(cv::Point position);
+
+	/**
+	 * @brief Get the area
+	 * 
+	 * @return int 
+	 */
+    int get_area() const;
+
+	/**
+	 * @brief Set the area
+	 * 
+	 * @param area 
+	 */
+	void set_area(int area);
+
+	/**
+	 * @brief Set the time
+	 * 
+	 * @param t 
+	 */
 	void set_time(time_t t);
 
-    time_t getTime() const;
+	/**
+	 * @brief Get the time
+	 * 
+	 * @return time_t 
+	 */
+    time_t get_time() const;
 
-    int getArea() const;
+	/**
+	 * @brief Get locked_in
+	 * 
+	 * @return true 
+	 * @return false 
+	 */
+	bool get_locked_in() const;
 
-    int getPoints() const;
+	/**
+	 * @brief Set locked_in to true
+	 * 
+	 */
+	void lock_in();
+
+	/**
+	 * @brief Set locked_in
+	 * 
+	 * @param value 
+	 */
+	void set_locked_in(bool value);
 };

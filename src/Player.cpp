@@ -1,24 +1,62 @@
 
 #include "Player.h"
 
+Player::Player(time_t time) : time(time) {}
+
+Player::Player(int player_Id, int marker_Id) : 
+    player_Id(player_Id), marker_Id(marker_Id), locked_in(false), points(0), area(-1), position_player(cv::Point(-1,-1)), time((time_t)(-1)) {}
+
+void Player::set_time(time_t t) {
+    Player::time=t;
+}
+
+time_t Player::get_time() const {
+    return time;
+}
+
+int Player::get_area() const {
+    return area;
+}
+
+void Player::set_area(int area){
+    area = area;
+}
+
+int Player::get_points() const {
+    return points;
+}
+
 void Player::add_points(int amount) {
     points+=amount;
 }
 
-void Player::set_time(time_t t) {
-    time=t;
+cv::Point Player::get_position_player() const{
+    return position_player;
 }
 
-time_t Player::getTime() const {
-    return time;
+void Player::set_position_player(cv::Point position){
+    position_player = position;
 }
 
-int Player::getArea() const {
-    return area;
+bool Player::get_locked_in() const{
+    return locked_in;
 }
 
-Player::Player(time_t time) : time(time) {}
+void Player::lock_in(){
+    locked_in = true;
+}
 
-int Player::getPoints() const {
-    return points;
+void Player::set_locked_in(bool value){
+    locked_in = value;
+}
+
+void Player::reset(){
+    set_position_player(cv::Point(-1,-1));
+    set_area(-1);
+    set_time((time_t)(-1));
+    set_locked_in(false);
+}
+
+int Player::get_player_id() const{
+    return player_Id;
 }
