@@ -1,6 +1,8 @@
 #include <vector>
 #include <string>
-#include "headers/Question.h"
+#include "Question.h"
+
+
 class Db_Api{
     std::vector<Question>questions;
     int counter;
@@ -20,12 +22,16 @@ public:
      * amount has to be [10;50]
      * category default -1 means any category
      * category 9 is general knowledge
+     * category 18 is computer science
      *
      */
     void retrieveQuestions(int amount=10,int category=-1);
 
     static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
 
+    /* takes the whole response as a string and converts it into questions,
+     * placing each into the questions vector
+     */
     void parseQuestions(const std::string& input,int amount);
 
     void cleanQuestions();

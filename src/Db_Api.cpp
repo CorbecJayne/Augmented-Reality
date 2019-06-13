@@ -9,7 +9,7 @@
 #include <sstream>
 #include <curl/curl.h>
 #include <vector>
-#include "headers/Db_Api.h"
+#include "Db_Api.h"
 
 using namespace std;
 
@@ -48,9 +48,10 @@ void Db_Api::retrieveQuestions(int amount,int category) {
     }else{
         cout<<"curl failed"<<endl;
     }
-    replaceAll(readBuffer,"&quot;","'");
-    replaceAll(readBuffer,"&#039;","'");
-    replaceAll(readBuffer,"&iacute;","í");
+    readBuffer=replaceAll(readBuffer,"&quot;","'");
+    readBuffer=replaceAll(readBuffer,"&#039;","'");
+    readBuffer=replaceAll(readBuffer,"&iacute;","í");
+    readBuffer=replaceAll(readBuffer,"&amp;","&");
     parseQuestions(readBuffer,amount);
     //cleanQuestions();
 }

@@ -1,5 +1,5 @@
 
-#include "headers/Player.h"
+#include "Player.h"
 #include <vector>
 #include <string>
 
@@ -68,5 +68,5 @@ class Player_Manager{
 	 * @brief Set lock, time, position and areas of player if necessary
 	 * 
 	 */
-	void update_player_info(vector<Player> player);
+	void update_player_info(std::vector<Player> player);
 };

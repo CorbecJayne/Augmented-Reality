@@ -1,8 +1,10 @@
-//
-// Created by evo on 06.06.19.
-//
+
 #include <string>
-#include "headers/Question.h"
+#include <sstream>
+#include <algorithm>
+#include <iostream>
+#include "Question.h"
+
 using namespace std;
 const string &Question::getQuestion() const {
     return question;
@@ -50,5 +52,26 @@ int Question::getCorrectPosition() const {
 
 void Question::setCorrectPosition(const int &pos) {
     correct_position=pos;
+}
+
+const string Question::to_string() const {
+    stringstream stream;
+    vector<string> answers;
+    answers.push_back(wrong_answer_one);
+    answers.push_back(wrong_answer_two);
+    answers.push_back(wrong_answer_three);
+    auto rng = default_random_engine {};
+    std::shuffle(begin(answers), end(answers), rng);
+    stream<<question<<"\n";
+    for(int i=0;i<4;i++){
+        if(i==correct_position){
+          stream<<correct_answer;
+        }else{
+            stream<<answers.at(answers.size()-1);
+            answers.pop_back();
+        }
+        stream<<"\n";
+    }
+    return stream.str();
 }
 

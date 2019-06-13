@@ -2,7 +2,7 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <vector>
-#include "headers/Player.h"
+#include "Player.h"
 
 class Marker_Tracking {
 	

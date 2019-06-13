@@ -1,8 +1,8 @@
 #include<opencv2/opencv.hpp>
 #include<iostream>
-#include"headers/PoseEstimation.h"
-#include"headers/Marker_Tracking.h"
-#include"headers/Player.h" 
+#include"PoseEstimation.h"
+#include"Marker_Tracking.h"
+#include"Player.h"
 
 using namespace cv;
 using namespace std;
@@ -148,7 +148,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 			MyStrip strip;
 
 			// A simple array of unsigned char cv::Mat
-			Mat imagePixelStripe = calculate_Stripe(dx, dy, strip);
+			//Mat imagePixelStripe = calculate_Stripe(dx, dy, strip);
 
 			// Array for edge point centers
 			Point2f edgePointCenters[6];
@@ -188,7 +188,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 							circle(imgFiltered, p2, 1, CV_RGB(0, 255, 255), -1);
 
 						// Combined Intensity of the subpixel, Ex 3
-						int pixelIntensity = subpixSampleSafe(grayScale, subPixel);
+						//int pixelIntensity = subpixSampleSafe(grayScale, subPixel);
 
 						// Convert from index to pixel coordinate
 						// m (Column, real) -> -1,0,1 but we need to map to 0,1,2 -> add 1 to 0..2
@@ -199,7 +199,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 						int h = n + (strip.stripeLength >> 1);
 
 						// Set pointer to correct position and safe subpixel intensity
-						imagePixelStripe.at<uchar>(h, w) = (uchar)pixelIntensity;
+						//imagePixelStripe.at<uchar>(h, w) = (uchar)pixelIntensity;
 					}
 				}
 
@@ -215,22 +215,22 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 				// To use the kernel we start with the second row (n) and stop before the last one
 				for (int n = 1; n < (strip.stripeLength - 1); n++) {
 					// Take the intensity value from the stripe 
-					unsigned char* stripePtr = &(imagePixelStripe.at<uchar>(n - 1, 0));
+					//unsigned char* stripePtr = &(imagePixelStripe.at<uchar>(n - 1, 0));
 
 					// Calculation of the gradient with the sobel for the first row
-					double r1 = -stripePtr[0] - 2. * stripePtr[1] - stripePtr[2];
+					//double r1 = -stripePtr[0] - 2. * stripePtr[1] - stripePtr[2];
 
 					// r2 -> Is equal to 0 because of sobel
 
 					// Go two lines for the third line of the sobel, step = size of the data type, here uchar
-					stripePtr += 2 * imagePixelStripe.step;
+					//stripePtr += 2 * imagePixelStripe.step;
 
 					// Calculation of the gradient with the sobel for the third row
-					double r3 = stripePtr[0] + 2. * stripePtr[1] + stripePtr[2];
+					//double r3 = stripePtr[0] + 2. * stripePtr[1] + stripePtr[2];
 
 					// Writing the result into our sobel value vector
-					unsigned int ti = n - 1;
-					sobelValues[ti] = r1 + r3;
+					//unsigned int ti = n - 1;
+					//sobelValues[ti] = r1 + r3;
 				}
 
 				double maxIntensity = -1;
@@ -297,7 +297,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 				if (isFirstStripe) {
 					Mat iplTmp;
 					// The intensity differences on the stripe
-					resize(imagePixelStripe, iplTmp, Size(100, 300));
+					//resize(imagePixelStripe, iplTmp, Size(100, 300));
 
 					imshow(stripWindow, iplTmp);
 					isFirstStripe = false;
@@ -539,7 +539,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		//        0  0  0  | 1 -> (Homogene coordinates to combine rotation, translation and scaling)
 		float resultMatrix[16];
 		// Marker size in meters!
-		estimateSquarePose(resultMatrix, (Point2f*)corners, 0.04346);
+		//estimateSquarePose(resultMatrix, (Point2f*)corners, 0.04346);
 
 		//TODO: verbose --> optional
 		// This part is only for printing
