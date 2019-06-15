@@ -23,14 +23,6 @@ void Player_Manager::give_score(int correct_area) {
         // should the next player get the same points
         if((*it).get_time() != (*(it+1)).get_time()) score-=250;
     }
-
-    for(auto & player : players){
-        //TODO: to something if both player answered at the same time
-        if(player.get_area() == correct_area){
-            player.add_points(score); 
-            score-=250;
-        }
-    }
 }
 
 const vector<Player> &Player_Manager::get_players() const {
