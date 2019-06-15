@@ -12,15 +12,17 @@ int main(){
 	//instantiate db & retrieve questions
 	Db_Api db;
 	db.retrieveQuestions();
+
+	// instantiate UI Manager
+	UI_Manager ui_manager;
 	
 	//instantiate Player Manager 
-	Player_Manager p_manager;
+	Player_Manager p_manager = Player_Manager(ui_manager);
 	
 	//instantiate Marker_Tracking & calibrate
 	//Marker_Tracking tracking;
 	//tracking.calibrate();
-
-	UI_Manager ui_manager;
+	
 	Mat image;
 
 	int i=0;
@@ -46,7 +48,7 @@ int main(){
 		//	ui_manager.display(question.getCorrectAnswer());
 		
 			//add points depending on if correct & order
-		//	p_manager.give_score();
+		//	p_manager.give_score(question.getCorrectPosition());
 		
 			//display player info
 		//	ui_manager.display(p_manager.get_scores());

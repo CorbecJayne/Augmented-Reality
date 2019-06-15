@@ -64,3 +64,7 @@ void Player::reset(){
 int Player::get_player_id() const{
     return player_Id;
 }
+
+int Player::get_marker_id() const{
+    return marker_Id;
+}

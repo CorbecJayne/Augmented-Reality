@@ -1,11 +1,16 @@
 
 #include "Player.h"
+#include "UI_Manager.h"
 #include <vector>
 #include <string>
+#include <time.h>
+#include <optional>
+
 
 class Player_Manager{
 	
 	std::vector<Player> players;
+	UI_Manager ui_manager;
 
 	public:
 
@@ -13,7 +18,7 @@ class Player_Manager{
 	 * @brief Constructs 4 Players with markerId & playerId
 	 * 
 	 */
-    Player_Manager();
+    Player_Manager(UI_Manager manager);
 
     virtual ~Player_Manager();
 
@@ -48,7 +53,7 @@ class Player_Manager{
 	 * @brief Sets the scores of all players based on the timestamps. Possible points: 1000,750,500,250
 	 * 
 	 */
-	void give_score();
+	void give_score(int correct_area);
 	
 	/**
 	 * @brief Set the area of the player based on its position
@@ -68,5 +73,13 @@ class Player_Manager{
 	 * @brief Set lock, time, position and areas of player if necessary
 	 * 
 	 */
-	void update_player_info(std::vector<Player> player);
+	void update_player_info(std::vector<Player> new_info);
+
+	/**
+	 * @brief Find the player with the specified marker id
+	 * 
+	 * @param marker_id 
+	 * @return Player 
+	 */
+	std::optional<Player> find_Player(int marker_id);
 };

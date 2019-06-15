@@ -1,3 +1,4 @@
+#pragma once 
 #include <opencv2/opencv.hpp>
 
 class UI_Manager
@@ -6,6 +7,7 @@ class UI_Manager
 	//VideoCapture cap(0);
 	
 public:
+
 	UI_Manager();
 	~UI_Manager()= default;
 	

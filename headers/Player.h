@@ -1,6 +1,6 @@
 #pragma once
 #include <opencv2/opencv.hpp>
-#include <ctime>
+#include <time.h>
 
 class Player
 {
@@ -39,6 +39,13 @@ public:
 	 * @return int 
 	 */
 	int get_player_id() const;
+
+	/**
+	 * @brief Get the marker id
+	 * 
+	 * @return int 
+	 */
+	int get_marker_id() const;
 	
 	/**
 	 * @brief Add amount to points
