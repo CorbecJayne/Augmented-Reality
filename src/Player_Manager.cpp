@@ -80,7 +80,7 @@ std::string Player_Manager::get_scores(){
     }
 }
 
-optional<Player> Player_Manager::find_Player(int marker_id){ 
+optional<reference_wrapper<Player>> Player_Manager::find_Player(int marker_id){ 
     for(auto & player: players){
         if(marker_id == player.get_marker_id()) return player;
     }

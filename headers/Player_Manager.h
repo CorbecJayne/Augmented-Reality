@@ -5,6 +5,7 @@
 #include <string>
 #include <time.h>
 #include <optional>
+#include <functional>
 
 
 class Player_Manager{
@@ -81,5 +82,5 @@ class Player_Manager{
 	 * @param marker_id 
 	 * @return Player 
 	 */
-	std::optional<Player> find_Player(int marker_id);
+	std::optional<std::reference_wrapper<Player>> find_Player(int marker_id);
 };
