@@ -68,10 +68,12 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 
 	//drawContours(imgFiltered, contours, -1, Scalar(0, 255, 0), 4, 1);
 
+	vector<int> distinct_marker_ids;
+	vector<Point> marker_positions;
+
 	// size is always positive, so unsigned int -> size_t; if you have not initialized the vector it is -1, hence crash
 	for (size_t k = 0; k < contours.size(); k++) {
 		// collect all distinct markers ids
-		vector<int> distinct_marker_ids;
 
 
 		// -------------------------------------------------
@@ -500,13 +502,6 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		printf("Found: %04x\n", code);
 
 
-		// Add Marker to marker vector, if its code is not represented yet
-		if(!(std::find(distinct_marker_ids.begin(), distinct_marker_ids.end(), code) != distinct_marker_ids.end())) {
-			// distinct_marker_ids does not contain code
-			distinct_marker_ids.push_back(code);
-		}
-
-
 		//TODO: visualization --> optional
 		// Show the first detected marker in the image
 		if (isFirstMarker) {
@@ -539,7 +534,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		//        0  0  0  | 1 -> (Homogene coordinates to combine rotation, translation and scaling)
 		float resultMatrix[16];
 		// Marker size in meters!
-		//estimateSquarePose(resultMatrix, (Point2f*)corners, 0.04346);
+		estimateSquarePose(resultMatrix, (Point2f*)corners, 0.04346);
 
 		//TODO: verbose --> optional
 		// This part is only for printing
@@ -562,14 +557,26 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		cout << "length: " << sqrt(x* x + y * y + z * z) << "\n";
 		cout << "\n";
 
+		// TODO: check whether positions are correct, was z-axis = direction of camera?
+		// Add Marker to marker vector, if its code is not represented yet
+		if(!(std::find(distinct_marker_ids.begin(), distinct_marker_ids.end(), code) != distinct_marker_ids.end())) {
+			// distinct_marker_ids does not contain code
+			distinct_marker_ids.push_back(code);
+			marker_positions.push_back(Point(x, y));
+		}
+
 		// -----------------------------
 	}
 
 	isFirstStripe = true;
 	isFirstMarker = true;
 
-
 	//TODO: identify codes with Players and return vector<Player> output
+	time_t timestamp = time(nullptr);
+	for (int i = 0; i < distinct_marker_ids.size; i++) {
+		Player nextPlayer = Player(marker_positions[i], distinct_marker_ids[i], timestamp);
+		output.push_back(nextPlayer);
+	}
 
 	return output;
 }
