@@ -23,9 +23,9 @@ public:
      * category default -1 means any category
      * category 9 is general knowledge
      * category 18 is computer science
-     *
+     * difficulty can be empty, easy, medium, hard
      */
-    void retrieveQuestions(int amount=10,int category=-1);
+    int retrieveQuestions(int amount=10,int category=-1,std::string difficulty="");
 
     static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
 

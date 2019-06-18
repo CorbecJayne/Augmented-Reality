@@ -11,7 +11,10 @@ int main(){
 	
 	//instantiate db & retrieve questions
 	Db_Api db;
-	db.retrieveQuestions();
+	if(db.retrieveQuestions()!=0){
+	    cout<<"db api couldn't return results, try a different query"<<endl;
+	    return 1;
+	}
 
 	//instantiate Marker_Tracking & calibrate
 	Point center;

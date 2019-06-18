@@ -13,21 +13,27 @@
 
 using namespace std;
 
-void Db_Api::retrieveQuestions(int amount,int category) {
+int Db_Api::retrieveQuestions(int amount,int category,string difficulty) {
     CURL *curl;
     CURLcode res;
     string readBuffer;
     stringstream stream;
     string query;
+    string diff;
     const string type="multiple";     //4 answers , #REQUIRED
     if(amount<10||amount>50){
         cout<<"amount must be [10,50]"<<endl;
-        return;
+        return -1;
+    }
+    if(difficulty.empty()){
+        diff="";
+    }else{
+        diff="&difficulty="+difficulty;
     }
     if(category==-1){
-        stream << "https://opentdb.com/api.php?amount=" << amount << "&type=" << type;
+        stream << "https://opentdb.com/api.php?amount=" << amount << diff <<"&type=" << type;
     }else {
-        stream << "https://opentdb.com/api.php?amount=" << amount << "&category=" << category << "&type=" << type;
+        stream << "https://opentdb.com/api.php?amount=" << amount << "&category=" << category << diff << "&type=" << type;
     }
     query=stream.str();
 
@@ -48,39 +54,23 @@ void Db_Api::retrieveQuestions(int amount,int category) {
     }else{
         cout<<"curl failed"<<endl;
     }
+    int index_response_code=readBuffer.find("response_code");
+    string response_code=readBuffer.substr(index_response_code+15,1);
+    if(response_code!="0"){
+        return -1;
+    }
     readBuffer=replaceAll(readBuffer,"&quot;","'");
     readBuffer=replaceAll(readBuffer,"&#039;","'");
     readBuffer=replaceAll(readBuffer,"&iacute;","í");
     readBuffer=replaceAll(readBuffer,"&amp;","&");
     parseQuestions(readBuffer,amount);
-    //cleanQuestions();
+
+    return 0;
 }
 
 void Db_Api::printQuestions(){
     for(auto & question : questions){
         cout << "Question : " << question.getQuestion() <<"\ncorrect answer : " <<question.getCorrectAnswer()<<" incorrect answers : "<<question.getWrongAnswerOne()<<","<<question.getWrongAnswerTwo()<<","<<question.getWrongAnswerThree()<<endl;
-    }
-}
-
-void Db_Api::cleanQuestions() {
-    for(auto & question : questions){
-        question.setQuestion(replaceAll(question.getQuestion(),"&quot;","'"));
-        question.setCorrectAnswer(replaceAll(question.getCorrectAnswer(),"&quot;","'"));
-        question.setWrongAnswerOne(replaceAll(question.getWrongAnswerOne(),"&quot;","'"));
-        question.setWrongAnswerTwo(replaceAll(question.getWrongAnswerTwo(),"&quot;","'"));
-        question.setWrongAnswerThree(replaceAll(question.getWrongAnswerThree(),"&quot;","'"));
-
-        question.setQuestion(replaceAll(question.getQuestion(),"&#039;","'"));
-        question.setCorrectAnswer(replaceAll(question.getCorrectAnswer(),"&#039;","'"));
-        question.setWrongAnswerOne(replaceAll(question.getWrongAnswerOne(),"&#039;","'"));
-        question.setWrongAnswerTwo(replaceAll(question.getWrongAnswerTwo(),"&#039;","'"));
-        question.setWrongAnswerThree(replaceAll(question.getWrongAnswerThree(),"&#039;","'"));
-
-        question.setQuestion(replaceAll(question.getQuestion(),"&iacute;","í"));
-        question.setCorrectAnswer(replaceAll(question.getCorrectAnswer(),"&iacute;","í"));
-        question.setWrongAnswerOne(replaceAll(question.getWrongAnswerOne(),"&iacute;","í"));
-        question.setWrongAnswerTwo(replaceAll(question.getWrongAnswerTwo(),"&iacute;","í"));
-        question.setWrongAnswerThree(replaceAll(question.getWrongAnswerThree(),"&iacute;","í"));
     }
 }
 
