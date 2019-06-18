@@ -23,6 +23,8 @@ void Player_Manager::give_score(int correct_area) {
         // should the next player get the same points
         if((*it).get_time() != (*(it+1)).get_time()) score-=250;
     }
+    // TODO
+    // players.size()-1
 }
 
 const vector<Player> &Player_Manager::get_players() const {

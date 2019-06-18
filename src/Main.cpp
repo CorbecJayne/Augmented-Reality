@@ -13,15 +13,18 @@ int main(){
 	Db_Api db;
 	db.retrieveQuestions();
 
+	//instantiate Marker_Tracking & calibrate
+	Point center;
+	//Marker_Tracking tracking;
+	//tracking.calibrate();
+	// center = tracking.get_center(); or something similars
+
 	// instantiate UI Manager
+	// UI_Manager ui_manager = UI_Manager(center);
 	UI_Manager ui_manager;
 	
 	//instantiate Player Manager 
 	Player_Manager p_manager = Player_Manager(ui_manager);
-	
-	//instantiate Marker_Tracking & calibrate
-	//Marker_Tracking tracking;
-	//tracking.calibrate();
 	
 	Mat image;
 
