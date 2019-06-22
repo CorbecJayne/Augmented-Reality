@@ -20,11 +20,11 @@ void Player_Manager::give_score(int correct_area) {
     for(auto it=players.begin(); it!=players.end()-1; it++){
         // add points
         if((*it).get_area() == correct_area) (*it).add_points(score); 
-        // should the next player get the same points
+        // should the next player get the same points?
         if((*it).get_time() != (*(it+1)).get_time()) score-=250;
     }
-    // TODO
-    // players.size()-1
+    // last player
+    players.back().add_points(score);
 }
 
 const vector<Player> &Player_Manager::get_players() const {

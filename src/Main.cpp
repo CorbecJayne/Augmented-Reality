@@ -33,7 +33,7 @@ int main(){
 
 	int i=0;
 	while(i<10){
-		// get next camera image
+		// get next camera image 
 		//ui_manager.get_next_image(image);
 
 		//retrieve question
