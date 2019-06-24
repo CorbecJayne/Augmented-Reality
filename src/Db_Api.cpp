@@ -65,7 +65,8 @@ int Db_Api::retrieveQuestions(int t_amount,int t_category,string t_difficulty) {
     readBuffer=replaceAll(readBuffer,"&amp;","&");
     readBuffer=replaceAll(readBuffer,"&ldquo;","'");
     readBuffer=replaceAll(readBuffer,"&rdquo;","'");
-
+    readBuffer=replaceAll(readBuffer,"&rsquo;","'");
+    readBuffer=replaceAll(readBuffer,"&lsquo;","'");
 
     parseQuestions(readBuffer,t_amount);
 
