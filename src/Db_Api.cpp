@@ -13,7 +13,7 @@
 
 using namespace std;
 
-int Db_Api::retrieveQuestions(int amount,int category,string difficulty) {
+int Db_Api::retrieveQuestions(int t_amount,int t_category,string t_difficulty) {
     CURL *curl;
     CURLcode res;
     string readBuffer;
@@ -21,19 +21,19 @@ int Db_Api::retrieveQuestions(int amount,int category,string difficulty) {
     string query;
     string diff;
     const string type="multiple";     //4 answers , #REQUIRED
-    if(amount<10||amount>50){
+    if(t_amount<10||t_amount>50){
         cout<<"amount must be [10,50]"<<endl;
         return -1;
     }
-    if(difficulty.empty()){
+    if(t_difficulty.empty()){
         diff="";
     }else{
-        diff="&difficulty="+difficulty;
+        diff="&difficulty="+t_difficulty;
     }
-    if(category==-1){
-        stream << "https://opentdb.com/api.php?amount=" << amount << diff <<"&type=" << type;
+    if(t_category==-1){
+        stream << "https://opentdb.com/api.php?amount=" << t_amount << diff <<"&type=" << type;
     }else {
-        stream << "https://opentdb.com/api.php?amount=" << amount << "&category=" << category << diff << "&type=" << type;
+        stream << "https://opentdb.com/api.php?amount=" << t_amount << "&category=" << t_category << diff << "&type=" << type;
     }
     query=stream.str();
 
@@ -47,7 +47,7 @@ int Db_Api::retrieveQuestions(int amount,int category,string difficulty) {
         res = curl_easy_perform(curl);
 
         if(res!=0){
-            cout<<"curl performed returned "<<res<<endl;
+            cout<<"curl perform returned "<<res<<endl;
         }
 
         curl_easy_cleanup(curl);
@@ -63,7 +63,11 @@ int Db_Api::retrieveQuestions(int amount,int category,string difficulty) {
     readBuffer=replaceAll(readBuffer,"&#039;","'");
     readBuffer=replaceAll(readBuffer,"&iacute;","í");
     readBuffer=replaceAll(readBuffer,"&amp;","&");
-    parseQuestions(readBuffer,amount);
+    readBuffer=replaceAll(readBuffer,"&ldquo;","'");
+    readBuffer=replaceAll(readBuffer,"&rdquo;","'");
+
+
+    parseQuestions(readBuffer,t_amount);
 
     return 0;
 }
@@ -74,7 +78,7 @@ void Db_Api::printQuestions(){
     }
 }
 
-void Db_Api::parseQuestions(const string& input,int amount){
+void Db_Api::parseQuestions(const string& t_input,int t_amount){
     size_t index_question_begin=0;
     size_t index_question_end=0;
     size_t index_incorrect_answers=0;
@@ -84,28 +88,28 @@ void Db_Api::parseQuestions(const string& input,int amount){
     string wrong_answer_one;
     string wrong_answer_two;
     string wrong_answer_three;
-    Question question;
-    for(int i=0;i<amount;i++){
-        index_question_begin=input.find("question",index_question_end)+11;
-        index_question_end=input.find("correct_answer",index_question_begin)-3;
-        index_incorrect_answers=input.find("incorrect_answers",index_question_end)-3;
+    for(int i=0;i<t_amount;i++){
+        Question question;
+        index_question_begin=t_input.find("question",index_question_end)+11;
+        index_question_end=t_input.find("correct_answer",index_question_begin)-3;
+        index_incorrect_answers=t_input.find("incorrect_answers",index_question_end)-3;
 
-        question_text=input.substr(index_question_begin,index_question_end-index_question_begin);
+        question_text=t_input.substr(index_question_begin,index_question_end-index_question_begin);
 
         index_question_end+=20  ;
-        correct_answer=input.substr(index_question_end,index_incorrect_answers-index_question_end);
+        correct_answer=t_input.substr(index_question_end,index_incorrect_answers-index_question_end);
 
         index_incorrect_answers+=24;
-        index_incorrect_answer_separator=input.find(',',index_incorrect_answers)-1;
-        wrong_answer_one=input.substr(index_incorrect_answers,index_incorrect_answer_separator-index_incorrect_answers);
+        index_incorrect_answer_separator=t_input.find(',',index_incorrect_answers)-1;
+        wrong_answer_one=t_input.substr(index_incorrect_answers,index_incorrect_answer_separator-index_incorrect_answers);
 
-        index_incorrect_answers=input.find(',',index_incorrect_answer_separator+2)-1;
+        index_incorrect_answers=t_input.find(',',index_incorrect_answer_separator+2)-1;
         index_incorrect_answer_separator+=3;
-        wrong_answer_two=input.substr(index_incorrect_answer_separator,index_incorrect_answers-index_incorrect_answer_separator);
+        wrong_answer_two=t_input.substr(index_incorrect_answer_separator,index_incorrect_answers-index_incorrect_answer_separator);
 
-        index_incorrect_answer_separator=input.find(']',index_incorrect_answers)-1;
+        index_incorrect_answer_separator=t_input.find(']',index_incorrect_answers)-1;
         index_incorrect_answers+=3;
-        wrong_answer_three=input.substr(index_incorrect_answers,index_incorrect_answer_separator-index_incorrect_answers);
+        wrong_answer_three=t_input.substr(index_incorrect_answers,index_incorrect_answer_separator-index_incorrect_answers);
 
         question.setQuestion(question_text);
         question.setCorrectAnswer(correct_answer);
@@ -117,20 +121,20 @@ void Db_Api::parseQuestions(const string& input,int amount){
     }
 }
 
-size_t Db_Api::WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+size_t Db_Api::WriteCallback(void *contents, size_t t_size, size_t t_nmemb, void *userp)
 {
-    ((std::string*)userp)->append((char*)contents, size * nmemb);
-    return size * nmemb;
+    ((std::string*)userp)->append((char*)contents, t_size * t_nmemb);
+    return t_size * t_nmemb;
 }
 
-string Db_Api::replaceAll(std::string str, const std::string& from, const std::string& to)  {
-    size_t pos = str.find(from);
+string Db_Api::replaceAll(std::string t_source, const std::string& t_old, const std::string& t_new)  {
+    size_t pos = t_source.find(t_old);
     while( pos != std::string::npos)
     {
-        str.replace(pos, from.size(), to);
-        pos =str.find(from, pos + to.size());
+        t_source.replace(pos, t_old.size(), t_new);
+        pos =t_source.find(t_old, pos + t_new.size());
     }
-    return str;
+    return t_source;
 }
 
 Question Db_Api::getNextQuestion() {

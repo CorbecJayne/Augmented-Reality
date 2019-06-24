@@ -15,7 +15,7 @@ public:
 
     const std::vector<Question> &getQuestions() const;
 
-    static std::string replaceAll(std::string str, const std::string& from, const std::string& to);
+    static std::string replaceAll(std::string t_source, const std::string& t_old, const std::string& t_new);
 
 
     /*
@@ -25,14 +25,14 @@ public:
      * category 18 is computer science
      * difficulty can be empty, easy, medium, hard
      */
-    int retrieveQuestions(int amount=10,int category=-1,std::string difficulty="");
+    int retrieveQuestions(int t_amount=10,int t_category=-1,std::string t_difficulty="");
 
-    static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
+    static size_t WriteCallback(void *contents, size_t t_size, size_t t_nmemb, void *userp);
 
     /* takes the whole response as a string and converts it into questions,
      * placing each into the questions vector
      */
-    void parseQuestions(const std::string& input,int amount);
+    void parseQuestions(const std::string& t_input,int t_amount);
 
     void cleanQuestions();
 
