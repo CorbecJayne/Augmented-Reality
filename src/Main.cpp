@@ -21,7 +21,7 @@ int main(){
 	std::cout << "DEBUG!!";
 	
 	//instantiate Player Manager 
-	Player_Manager p_manager = Player_Manager(ui_manager);
+	Player_Manager p_manager = Player_Manager();
 	
 	
 	//instantiate Marker_Tracking & calibrate
@@ -46,7 +46,7 @@ int main(){
 		vector<Player> new_infos = tracking.detect_markers(image);
 		
 		//compare 
-		//p_manager.update_player_info(new_info);
+		p_manager.update_player_info(ui_manager,new_infos);
 		
 		//if all locked in
 		//if(p_manager.all_locked()){

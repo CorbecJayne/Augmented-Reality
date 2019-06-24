@@ -12,7 +12,6 @@
 class Player_Manager{
 	
 	std::vector<Player> players;
-	UI_Manager ui_manager;
 
 	public:
 
@@ -20,7 +19,6 @@ class Player_Manager{
 	 * @brief Constructs 4 Players with markerId & playerId
 	 * 
 	 */
-    Player_Manager(UI_Manager &manager);
 
 	Player_Manager();
 
@@ -63,7 +61,7 @@ class Player_Manager{
 	 * @brief Set the area of the player based on its position
 	 * 
 	 */
-	void set_areas();
+    void set_areas(UI_Manager &uiManager);
 	
 	/**
 	 * @brief Checks if all player have answered
@@ -77,7 +75,7 @@ class Player_Manager{
 	 * @brief Set lock, time, position and areas of player if necessary
 	 * 
 	 */
-	void update_player_info(std::vector<Player> new_info);
+    void update_player_info(UI_Manager& uiManager, std::vector<Player> new_info);
 
 	/**
 	 * @brief Find the player with the specified marker id
@@ -86,4 +84,5 @@ class Player_Manager{
 	 * @return Player 
 	 */
 	std::optional<std::reference_wrapper<Player>> find_Player(int marker_id);
+
 };
