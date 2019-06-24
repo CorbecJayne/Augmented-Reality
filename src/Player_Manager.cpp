@@ -35,7 +35,7 @@ void Player_Manager::set_players(const vector<Player> &players) {
 
 Player_Manager::~Player_Manager() = default;
 
-Player_Manager::Player_Manager(UI_Manager manager) {
+Player_Manager::Player_Manager(UI_Manager &manager) {
     // players.emplace_back(98);
     // players.emplace_back(23);
     // players.emplace_back(123);

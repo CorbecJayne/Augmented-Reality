@@ -1,6 +1,6 @@
 #include<opencv2/opencv.hpp>
 #include<iostream>
-#include"PoseEstimation.h"
+#include"Pose_Estimation.h"
 #include"Marker_Tracking.h"
 #include"Player.h"
 
@@ -573,7 +573,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 
 	//TODO: identify codes with Players and return vector<Player> output
 	time_t timestamp = time(nullptr);
-	for (int i = 0; i < distinct_marker_ids.size; i++) {
+	for (int i = 0; i < distinct_marker_ids.size(); i++) {
 		Player nextPlayer = Player(marker_positions[i], distinct_marker_ids[i], timestamp);
 		output.push_back(nextPlayer);
 	}

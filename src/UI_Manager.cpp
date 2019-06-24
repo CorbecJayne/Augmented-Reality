@@ -6,10 +6,11 @@ using namespace std;
 using namespace cv;
 
 // like this
-UI_Manager::UI_Manager() {
-    VideoCapture cap(0);
-	string Wname = "Frame Capture";
-	namedWindow(Wname);
+UI_Manager::UI_Manager(VideoCapture &cap) {
+	camera = cap;
+    Wname = "Frame Capture";
+	namedWindow(Wname, CV_WINDOW_AUTOSIZE);
+    
 }
 
 // display on console
@@ -48,7 +49,14 @@ void UI_Manager::setCenter(const Point &center) {
 }
 
 // get camera image, use code from ARExercise
-Mat get_next_image(Mat frame){
-    //cap >> frame;
-	//imshow(Wname, frame);
+Mat UI_Manager::get_next_image(Mat &frame){
+    if (!camera.isOpened()) {
+		cout << "No webcam, using video file" << endl;
+		camera.open("MarkerMovie.MP4");
+        Mat empty;
+        return empty;
+	}
+    camera.read(frame);
+	imshow(Wname, frame);
+    return frame;
 }

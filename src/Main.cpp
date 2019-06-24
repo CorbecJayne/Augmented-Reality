@@ -13,14 +13,19 @@ int main(){
 	Db_Api db;
 	db.retrieveQuestions();
 
+	
 	// instantiate UI Manager
-	UI_Manager ui_manager;
+	VideoCapture cap(0);
+	UI_Manager ui_manager(cap);
+	
+	std::cout << "DEBUG!!";
 	
 	//instantiate Player Manager 
 	Player_Manager p_manager = Player_Manager(ui_manager);
 	
+	
 	//instantiate Marker_Tracking & calibrate
-	//Marker_Tracking tracking;
+	Marker_Tracking tracking;
 	//tracking.calibrate();
 	
 	Mat image;
@@ -28,7 +33,8 @@ int main(){
 	int i=0;
 	while(i<10){
 		// get next camera image
-		//ui_manager.get_next_image(image);
+		ui_manager.get_next_image(image);
+
 
 		//retrieve question
 		Question question = db.getNextQuestion();
@@ -37,7 +43,7 @@ int main(){
 		ui_manager.display(question.to_string());
 		
 		//detect markers
-		//vector<Player> new_infos = tracking.detect_markers(image);
+		vector<Player> new_infos = tracking.detect_markers(image);
 		
 		//compare 
 		//p_manager.update_player_info(new_info);

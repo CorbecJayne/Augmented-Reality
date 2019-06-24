@@ -1,3 +1,4 @@
+#pragma once
 
 #include "Player.h"
 #include "UI_Manager.h"
@@ -19,7 +20,9 @@ class Player_Manager{
 	 * @brief Constructs 4 Players with markerId & playerId
 	 * 
 	 */
-    Player_Manager(UI_Manager manager);
+    Player_Manager(UI_Manager &manager);
+
+	Player_Manager();
 
     virtual ~Player_Manager();
 

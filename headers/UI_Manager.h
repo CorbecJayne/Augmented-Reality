@@ -4,11 +4,13 @@
 class UI_Manager
 {
 	cv::Point center;
-	//VideoCapture cap(0);
+	cv::VideoCapture camera;
+	std::string Wname;
 	
 public:
 
 	UI_Manager();
+	UI_Manager(cv::VideoCapture &cap);
 	~UI_Manager()= default;
 	
 	void display(std::string text);
@@ -23,7 +25,7 @@ public:
 	int get_area_of_point(cv::Point p);
 
 	// get camera image
-	cv::Mat get_next_image(cv::Mat mat);
+	cv::Mat get_next_image(cv::Mat &mat);
 
     const cv::Point &getCenter() const;
 
