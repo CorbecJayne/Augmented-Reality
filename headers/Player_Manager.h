@@ -1,17 +1,17 @@
+#pragma once
 
 #include "Player.h"
-#include "UI_Manager.h"
 #include <vector>
 #include <string>
 #include <time.h>
 #include <optional>
 #include <functional>
+#include <opencv2/opencv.hpp>
 
 
 class Player_Manager{
 	
 	std::vector<Player> players;
-	UI_Manager ui_manager;
 
 	public:
 
@@ -19,7 +19,8 @@ class Player_Manager{
 	 * @brief Constructs 4 Players with markerId & playerId
 	 * 
 	 */
-    Player_Manager(UI_Manager manager);
+
+	Player_Manager();
 
     virtual ~Player_Manager();
 
@@ -60,7 +61,7 @@ class Player_Manager{
 	 * @brief Set the area of the player based on its position
 	 * 
 	 */
-	void set_areas();
+    void set_areas(cv::Point& center);
 	
 	/**
 	 * @brief Checks if all player have answered
@@ -74,7 +75,7 @@ class Player_Manager{
 	 * @brief Set lock, time, position and areas of player if necessary
 	 * 
 	 */
-	void update_player_info(std::vector<Player> new_info);
+    void update_player_info(cv::Point& center, std::vector<Player> new_info);
 
 	/**
 	 * @brief Find the player with the specified marker id
@@ -83,4 +84,14 @@ class Player_Manager{
 	 * @return Player 
 	 */
 	std::optional<std::reference_wrapper<Player>> find_Player(int marker_id);
+
+
+	/* uses member center to calculate area of given point returns accordingly
+	 * top_left     :   0
+	 * top_right    :   1
+	 * bottom_left  :   2
+	 * bottom_right :   3
+	 */
+	int get_area_of_point(cv::Point p, cv::Point& center);
+
 };
