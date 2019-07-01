@@ -9,22 +9,14 @@ using namespace std;
 
 #define THRESHOLD_VALUE 120
 
-#define EX5 1
-#define EX5_RAW 0
+#define CHECKPOINTS 0
+#define DEBUG 0
+#define DEBUG_LOG 0
 #define DRAW_CONTOUR 0
 #define DRAW_RECTANGLE 0
-#define LOG_ID 1
+#define LOG_ID 0
 
 #define THICKNESS_VALUE 4
-
-// Struct holding all infos about each strip, e.g. length
-struct MyStrip {
-	int stripeLength;
-	int nStop;
-	int nStart;
-	Point2f stripeVecX;
-	Point2f stripeVecY;
-};
 
 
 // List of points
@@ -35,20 +27,24 @@ typedef vector<contour_t> contour_vector_t;
 Mat videoStreamFrameGray;
 Mat videoStreamFrameOutput;
 
-const string stripWindow = "Strip Window";
-const std::string kWinName4 = "Exercise 4 - Marker";
-int bw_thresh = 55;
 
 vector<Player> Marker_Tracking::detect_markers(Mat input) {
 
 	vector<Player> output;
 
 	bool isFirstStripe = true;
-
 	bool isFirstMarker = true;
+	const string stripWindow = "Strip Window";
+	const std::string kWinName = "Marker";
 	const string contoursWindow = "Contours";
-	const string UI = "Threshold";
+	//int bw_thresh = 55;
 
+	#if DEBUG
+	//namedWindow(stripWindow, CV_WINDOW_AUTOSIZE);
+	namedWindow(contoursWindow, CV_WINDOW_AUTOSIZE);
+	namedWindow(kWinName, CV_WINDOW_NORMAL);
+	resizeWindow(kWinName, 120, 120);
+	#endif
 
 	Mat imgFiltered;
 
@@ -58,10 +54,12 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 	imgFiltered = input.clone();
 	cvtColor(imgFiltered, grayScale, COLOR_BGR2GRAY);
 
+
 	// Threshold to reduce the noise
 	threshold(grayScale, grayScale, THRESHOLD_VALUE, 255, THRESH_BINARY);
 
 	contour_vector_t contours;
+
 
 	// RETR_LIST is a list of all found contour, SIMPLE is to just save the begin and ending of each edge which belongs to the contour
 	findContours(grayScale, contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
@@ -71,14 +69,24 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 	vector<int> distinct_marker_ids;
 	vector<Point> marker_positions;
 
+	#if CHECKPOINTS
+	std::cout << "Checkpoint 1: Found contours" <<  endl;
+	#endif
+
 	// size is always positive, so unsigned int -> size_t; if you have not initialized the vector it is -1, hence crash
 	for (size_t k = 0; k < contours.size(); k++) {
+
+		#if CHECKPOINTS
+		int checkpoint_fraction = 1;
+		#endif
+
 		// collect all distinct markers ids
 
 
 		// -------------------------------------------------
 
 		// --- Process Contour ---
+
 
 		contour_t approx_contour;
 
@@ -90,7 +98,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		// Convert to a usable rectangle
 		Rect r = boundingRect(approx_contour);
 
-#if DRAW_CONTOUR
+		#if DRAW_CONTOUR
 		contour_vector_t cov, aprox;
 		cov.emplace_back(contours[k]);
 		aprox.emplace_back(approx_contour);
@@ -99,25 +107,25 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 			drawContours(imgFiltered, cov, -1, Scalar(255, 0, 0), 4, 1);
 			continue;
 		}
-#endif // DRAW_CONTOUR
+		#endif // DRAW_CONTOUR
 
-#if DRAW_RECTANGLE
+		#if DRAW_RECTANGLE
 		rectangle(imgFiltered, r, Scalar(0, 0, 255), 4);
 		continue;
-#endif //DRAW_RECTANGLE
+		#endif //DRAW_RECTANGLE
 
 		Scalar QUADRILATERAL_COLOR(0, 0, 255);
 		Scalar colour;
 		
 		// 4 Corners -> We color and process them below
 		if (approx_contour.size() == 4) {
-			//TODO colouring --> optional
 			colour = QUADRILATERAL_COLOR;
 		}
 		else {
 			continue;
 		}
 
+		
 		// TODO: update filtering based on calibration
 
 		// --- Filter tiny ones --- If the found contour is too small (20 -> pixels, frame.cols - 10 to prevent extreme big contours)
@@ -125,23 +133,34 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 			continue;
 		}
 
+		//std::cout << "DEBUG " << k << endl;
+
 		// -> Cleaning done
 
-		//TODO colouring --> optional
+		#if DEBUG
 		// 1 -> 1 contour, we have a closed contour, true -> closed, 4 -> thickness
 		polylines(imgFiltered, approx_contour, true, colour, THICKNESS_VALUE);
+		#endif
 
 		// Direction vector (x0,y0) and contained point (x1,y1) -> For each line -> 4x4 = 16
 		float lineParams[16];
 		// lineParams is shared, CV_32F -> Same data type like lineParams
 		Mat lineParamsMat(Size(4, 4), CV_32F, lineParams);
 
+		#if CHECKPOINTS
+		if ((k % checkpoint_fraction) == 0){
+			std::cout << "Checkpoint 2: Approximated contour and filtered tiny ones" << endl;
+		}
+		#endif
+
 		// --- Process Corners ---
 
 		for (size_t i = 0; i < approx_contour.size(); ++i) {
-			//TODO colouring --> optional
+
+			#if DEBUG
 			// Render the corners, 3 -> Radius, -1 filled circle
 			circle(imgFiltered, approx_contour[i], 3, CV_RGB(0, 255, 0), -1);
+			#endif
 
 			// Euclidic distance, 7 -> parts, both directions dx and dy
 			double dx = ((double)approx_contour[(i + 1) % 4].x - (double)approx_contour[i].x) / 7.0;
@@ -150,7 +169,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 			MyStrip strip;
 
 			// A simple array of unsigned char cv::Mat
-			//Mat imagePixelStripe = calculate_Stripe(dx, dy, strip);
+			Mat imagePixelStripe = calculate_Stripe(dx, dy, strip);
 
 			// Array for edge point centers
 			Point2f edgePointCenters[6];
@@ -164,8 +183,10 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 				Point p;
 				p.x = (int)px;
 				p.y = (int)py;
-				//TODO colouring --> optional
+
+				#if DEBUG
 				circle(imgFiltered, p, 2, CV_RGB(0, 0, 255), -1);
+				#endif
 
 				// Columns: Loop over 3 pixels
 				for (int m = -1; m <= 1; ++m) {
@@ -183,14 +204,15 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 						p2.y = (int)subPixel.y;
 
 						// The one (purple color) which is shown in the stripe window
-						//TODO colouring --> optional
+						#if DEBUG
 						if (isFirstStripe)
 							circle(imgFiltered, p2, 1, CV_RGB(255, 0, 255), -1);
 						else
 							circle(imgFiltered, p2, 1, CV_RGB(0, 255, 255), -1);
+						#endif
 
 						// Combined Intensity of the subpixel, Ex 3
-						//int pixelIntensity = subpixSampleSafe(grayScale, subPixel);
+						int pixelIntensity = subpixSampleSafe(grayScale, subPixel);
 
 						// Convert from index to pixel coordinate
 						// m (Column, real) -> -1,0,1 but we need to map to 0,1,2 -> add 1 to 0..2
@@ -201,7 +223,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 						int h = n + (strip.stripeLength >> 1);
 
 						// Set pointer to correct position and safe subpixel intensity
-						//imagePixelStripe.at<uchar>(h, w) = (uchar)pixelIntensity;
+						imagePixelStripe.at<uchar>(h, w) = (uchar)pixelIntensity;
 					}
 				}
 
@@ -217,22 +239,22 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 				// To use the kernel we start with the second row (n) and stop before the last one
 				for (int n = 1; n < (strip.stripeLength - 1); n++) {
 					// Take the intensity value from the stripe 
-					//unsigned char* stripePtr = &(imagePixelStripe.at<uchar>(n - 1, 0));
+					unsigned char* stripePtr = &(imagePixelStripe.at<uchar>(n - 1, 0));
 
 					// Calculation of the gradient with the sobel for the first row
-					//double r1 = -stripePtr[0] - 2. * stripePtr[1] - stripePtr[2];
+					double r1 = -stripePtr[0] - 2. * stripePtr[1] - stripePtr[2];
 
 					// r2 -> Is equal to 0 because of sobel
 
 					// Go two lines for the third line of the sobel, step = size of the data type, here uchar
-					//stripePtr += 2 * imagePixelStripe.step;
+					stripePtr += 2 * imagePixelStripe.step;
 
 					// Calculation of the gradient with the sobel for the third row
-					//double r3 = stripePtr[0] + 2. * stripePtr[1] + stripePtr[2];
+					double r3 = stripePtr[0] + 2. * stripePtr[1] + stripePtr[2];
 
 					// Writing the result into our sobel value vector
-					//unsigned int ti = n - 1;
-					//sobelValues[ti] = r1 + r3;
+					unsigned int ti = n - 1;
+					sobelValues[ti] = r1 + r3;
 				}
 
 				double maxIntensity = -1;
@@ -287,25 +309,33 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 				edgeCenter.x = (double)p.x + (((double)maxIndexShift + pos) * strip.stripeVecY.x);
 				edgeCenter.y = (double)p.y + (((double)maxIndexShift + pos) * strip.stripeVecY.y);
 
-				//TODO: colouring --> optional
 				// Highlight the subpixel with blue color
+				#if DEBUG
 				circle(imgFiltered, edgeCenter, 2, CV_RGB(0, 0, 255), -1);
+				#endif
 
 				edgePointCenters[j - 1].x = edgeCenter.x;
 				edgePointCenters[j - 1].y = edgeCenter.y;
 
-				//TODO: colouring --> optional
 				// Draw the stripe in the image
+				#if DEBUG
 				if (isFirstStripe) {
 					Mat iplTmp;
 					// The intensity differences on the stripe
-					//resize(imagePixelStripe, iplTmp, Size(100, 300));
+					resize(imagePixelStripe, iplTmp, Size(100, 300));
 
 					imshow(stripWindow, iplTmp);
 					isFirstStripe = false;
 				}
+				#endif
 
 			}
+
+			#if CHECKPOINTS
+			if ((k % checkpoint_fraction) == 0){
+				std::cout << "Checkpoint 3: Processed corners and edges" << endl;
+			}
+			#endif
 
 			// We now have the array of exact edge centers stored in "points", every row has two values -> 2 channels!
 			Mat highIntensityPoints(Size(1, 6), CV_32FC2, edgePointCenters);
@@ -316,7 +346,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 			// i -> Edge points
 			fitLine(highIntensityPoints, lineParamsMat.col(i), CV_DIST_L2, 0, 0.01, 0.01);
 
-			//TODO: colouring --> optional
+			#if DEBUG
 			// We need two points to draw the line
 			Point p1;
 			// We have to jump through the 4x4 matrix, meaning the next value for the wanted line is in the next row -> +4
@@ -332,6 +362,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 
 			// Draw line
 			line(imgFiltered, p1, p2, CV_RGB(0, 255, 255), 1, 8, 0);
+			#endif
 		}
 
 		// So far we stored the exact line parameters and show the lines in the image now we have to calculate the exact corners
@@ -369,11 +400,12 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 			// Calculate the cross product to check if both direction vectors are parallel -> = 0
 			// c -> Determinant = 0 -> linear dependent -> the direction vectors are parallel -> No division with 0
 			double c = v1 * u0 - v0 * u1;
+			#if DEBUG_LOG
 			if (fabs(c) < 0.001) {
-				//TODO: verbose --> optional
 				std::cout << "lines parallel" << std::endl;
 				continue;
 			}
+			#endif
 
 			// We have checked for parallelism of the direction vectors
 			// -> Cramer's rule, now divide through the main determinant
@@ -388,10 +420,17 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 			p.x = (int)corners[i].x;
 			p.y = (int)corners[i].y;
 
-			//TODO: colouring --> optional
+			#if DEBUG
 			circle(imgFiltered, p, 5, CV_RGB(255, 255, 0), -1);
+			#endif
 
 		} // End of the loop to extract the exact corners
+
+		#if CHECKPOINTS
+		if ((k % checkpoint_fraction) == 0){
+			std::cout << "Checkpoint 4: Calculated exact corners" << endl;
+		}
+		#endif
 
 		// Coordinates on the original marker images to go to the actual center of the first pixel -> 6x6
 		Point2f targetCorners[4];
@@ -412,6 +451,12 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		// Change the perspective in the marker image using the previously calculated Homography Matrix
 		// In the Homography Matrix there is also the position in the image saved
 		warpPerspective(grayScale, imageMarker, homographyMatrix, Size(6, 6));
+
+		#if CHECKPOINTS
+		if ((k % checkpoint_fraction) == 0){
+			std::cout << "Checkpoint 5: Calculated homography matrix" << endl;
+		}
+		#endif
 
 		// Now we have a B/W image of a supposed Marker
 		//threshold(imageMarker, imageMarker, bw_thresh, 255, CV_THRESH_BINARY);
@@ -470,13 +515,13 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 			codes[3] <<= 1;
 			codes[3] |= cP[col][3 - row]; // 270�
 
-#if LOG_ID
+			#if LOG_ID
 			cout << "iteration: " << dec << i << endl;
 			cout << "Code 0: " << hex << codes[0] << endl;
 			cout << "Code 1: " << hex << codes[1] << endl;
 			cout << "Code 2: " << hex << codes[2] << endl;
 			cout << "Code 3: " << hex << codes[3] << endl;
-#endif
+			#endif
 		}
 
 		// Account for symmetry -> One side complete white or black
@@ -497,17 +542,22 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 			}
 		}
 
-		//TODO: verbose --> optional
 		// Print ID
 		printf("Found: %04x\n", code);
 
-
-		//TODO: visualization --> optional
+		#if DEBUG
 		// Show the first detected marker in the image
 		if (isFirstMarker) {
-			imshow(kWinName4, imageMarker);
+			imshow(kWinName, imageMarker);
 			isFirstMarker = false;
 		}
+		#endif
+
+		#if CHECKPOINTS
+		if ((k % checkpoint_fraction) == 0){
+			std::cout << "Checkpoint 6: Analyzed supposed marker" << endl;
+		}
+		#endif
 
 		// Correct the order of the corners, if 0 -> already have the 0 degree position
 		if (angle != 0) {
@@ -524,10 +574,10 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		// Transfer screen coords to camera coords -> To get to the principel point
 		for (int i = 0; i < 4; i++) {
 			// Here you have to use your own camera resolution (x) * 0.5
-			corners[i].x -= 0.5 * (end_x - start_x);
+			corners[i].x -= 320;  //0.5 * (end_x - start_x);
 			// -(corners.y) -> is neeeded because y is inverted
 			// Here you have to use your own camera resolution (y) * 0.5
-			corners[i].y = -corners[i].y + 0.5 * (end_y - start_y);
+			corners[i].y = -corners[i].y + 240;  //0.5 * (end_y - start_y);
 		}
 
 		// 4x4 -> Rotation | Translation
@@ -536,7 +586,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		// Marker size in meters!
 		estimateSquarePose(resultMatrix, (Point2f*)corners, 0.04346);
 
-		//TODO: verbose --> optional
+		#if DEBUG
 		// This part is only for printing
 		for (int i = 0; i < 4; ++i) {
 			for (int j = 0; j < 4; ++j) {
@@ -548,6 +598,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 			cout << "\n";
 		}
 		cout << "\n";
+		#endif
 		float x, y, z;
 		// Translation values in the transformation matrix to calculate the distance between the marker and the camera
 		x = resultMatrix[3];
@@ -556,6 +607,12 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		// Euclidian distance
 		cout << "length: " << sqrt(x* x + y * y + z * z) << "\n";
 		cout << "\n";
+
+		#if CHECKPOINTS
+		if ((k % checkpoint_fraction) == 0){
+			std::cout << "Checkpoint 7: Transformed marker coordinates to screen coordinates" << endl;
+		}
+		#endif
 
 		// TODO: check whether positions are correct, was z-axis = direction of camera?
 		// Add Marker to marker vector, if its code is not represented yet
@@ -568,10 +625,17 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		// -----------------------------
 	}
 
+	#if DEBUG
+	imshow(contoursWindow, imgFiltered);
+	#endif
+
+	#if CHECKPOINTS	
+	std::cout << "Checkpoint 8: End of function" << endl;
+	#endif
+
 	isFirstStripe = true;
 	isFirstMarker = true;
 
-	//TODO: identify codes with Players and return vector<Player> output
 	time_t timestamp = time(nullptr);
 	for (int i = 0; i < distinct_marker_ids.size(); i++) {
 		Player nextPlayer = Player(marker_positions[i], distinct_marker_ids[i], timestamp);
@@ -584,7 +648,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 
 
 
-int subpixSampleSafe(const Mat& pSrc, const Point2f& p) {
+int Marker_Tracking::subpixSampleSafe(const Mat& pSrc, const Point2f& p) {
 	// Point is float, slide 14
 	int fx = int(floorf(p.x));
 	int fy = int(floorf(p.y));
@@ -610,7 +674,7 @@ int subpixSampleSafe(const Mat& pSrc, const Point2f& p) {
 }
 
 // Added in Sheet 3 - Ex7 (a) Start *****************************************************************
-Mat calculate_Stripe(double dx, double dy, MyStrip & st) {
+Mat Marker_Tracking::calculate_Stripe(double dx, double dy, MyStrip & st) {
 	// Norm (euclidean distance) from the direction vector is the length (derived from the Pythagoras Theorem)
 	double diffLength = sqrt(dx * dx + dy * dy);
 

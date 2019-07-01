@@ -21,7 +21,7 @@ int main() {
 		return -1;
 	}
 	string Wname = "Frame Capture";
-	namedWindow(Wname);
+	//namedWindow(Wname);
 
 	//instantiate Player Manager 
 	Player_Manager p_manager = Player_Manager();
@@ -41,16 +41,21 @@ int main() {
 		Question question = db.getNextQuestion();
 		
 		//ui_manager show current question + answer
-		std::cout << question.to_string() << endl;
+		//std::cout << question.to_string() << endl;
 
-		
 		//detect markers
-		vector<Player> new_infos = tracking.detect_markers(frame);
+		for (int i = 0; i < 100; i++){
+			cap >> frame;
+			vector<Player> new_infos = tracking.detect_markers(frame);
+			for (Player player : new_infos){
+				std::cout << "DEBUG: " << player.get_marker_id() << endl;
+			}
+		}  
+
 		
 		//compare 
 		//p_manager.update_player_info(center,new_infos);
-		cap >> frame;
-		imshow(Wname, frame);
+		//imshow(Wname, frame);
 		int key = waitKey(10);
 		if (key == 27){
 			break;
@@ -72,6 +77,6 @@ int main() {
 
 	//	}
 	
-	destroyWindow(Wname);
+	//destroyWindow(Wname);
 	return 0;
 }
