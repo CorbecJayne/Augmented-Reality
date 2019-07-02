@@ -67,7 +67,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 	//drawContours(imgFiltered, contours, -1, Scalar(0, 255, 0), 4, 1);
 
 	vector<int> distinct_marker_ids;
-	vector<Point> marker_positions;
+	vector<Point2f> marker_positions;
 
 	#if CHECKPOINTS
 	std::cout << "Checkpoint 1: Found contours" <<  endl;
@@ -542,10 +542,11 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 			}
 		}
 
+
+		#if DEBUG
 		// Print ID
 		printf("Found: %04x\n", code);
 
-		#if DEBUG
 		// Show the first detected marker in the image
 		if (isFirstMarker) {
 			imshow(kWinName, imageMarker);
@@ -621,7 +622,8 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		if(!(std::find(distinct_marker_ids.begin(), distinct_marker_ids.end(), code) != distinct_marker_ids.end())) {
 			// distinct_marker_ids does not contain code
 			distinct_marker_ids.push_back(code);
-			marker_positions.push_back(Point(x, y));
+			cout << "point" << x  << y << endl;
+			marker_positions.push_back(Point2f(x, y));
 		}
 
 		// -----------------------------
@@ -639,6 +641,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 	isFirstMarker = true;
 
 	time_t timestamp = time(nullptr);
+	cout << "all position" << marker_positions << endl;
 	for (int i = 0; i < distinct_marker_ids.size(); i++) {
 		Player nextPlayer = Player(marker_positions[i], distinct_marker_ids[i], timestamp);
 		output.push_back(nextPlayer);

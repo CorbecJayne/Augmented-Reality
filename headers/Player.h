@@ -11,7 +11,7 @@ class Player
 	// Total points of the player, default:0
 	int points;
 	// Position of the marker on the display, default: (-1,-1)
-	cv::Point position_player;
+	cv::Point2f position_player;
 	// the answer area based on the position, default:-1
 	int area;
 	// Timestamp when the answer/ answer was detected , default: -1
@@ -25,7 +25,7 @@ public:
 
 	Player(int player_Id, int marker_Id);
 
-	Player(cv::Point position_player, int marker_Id, time_t time);
+	Player(cv::Point2f position_player, int marker_Id, time_t time);
 
 	/**
 	 * @brief Reset position, area, time, locked_in
@@ -64,16 +64,16 @@ public:
 	/**
 	 * @brief Get the position_player
 	 * 
-	 * @return cv::Point 
+	 * @return cv::Point2f 
 	 */
-    cv::Point get_position_player() const;
+    cv::Point2f get_position_player() const;
 
 	/**
 	 * @brief Set the position_player
 	 * 
 	 * @param position 
 	 */
-	void set_position_player(cv::Point position);
+	void set_position_player(cv::Point2f position);
 
 	/**
 	 * @brief Get the area

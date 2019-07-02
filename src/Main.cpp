@@ -60,7 +60,7 @@ int main() {
         vector<Player> new_infos = tracking.detect_markers(frame);
         imshow(Wname, frame);
         for (const Player& player : new_infos){
-            std::cout << "DEBUG: " << player.get_marker_id() << endl;
+            // std::cout << "DEBUG: " << player.get_marker_id() << endl;
         }
 		//compare 
 		p_manager.update_player_info(center,new_infos);

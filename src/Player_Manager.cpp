@@ -45,15 +45,15 @@ Player_Manager::Player_Manager() {
 }
 
 void Player_Manager::reset_players(){
-    for(auto & player: players){
+    for(auto & player: players){ 
         player.reset();
     }
 }
 
 void Player_Manager::set_areas(Point2f& center){
     for(auto & player: players){
-        if(player.get_position_player() != Point(-1,-1)){
-            Point position = player.get_position_player();
+        if(player.get_position_player() != Point2f(-1,-1)){
+            Point2f position = player.get_position_player();
             int area = get_area_of_point(position, center);
             player.set_area(area);
         }
@@ -84,6 +84,7 @@ optional<reference_wrapper<Player>> Player_Manager::find_Player(int marker_id){
 
 void Player_Manager::update_player_info(Point2f& center, vector<Player> new_info) {
     for(auto & info: new_info){
+        cout << "found position" << info.get_position_player() << endl;
         int info_marker_id = info.get_marker_id();
         // NULL check: valid marker id
         if(auto maybe_player = find_Player(info_marker_id)){
@@ -91,9 +92,6 @@ void Player_Manager::update_player_info(Point2f& center, vector<Player> new_info
             // not locked in
             if(!found_player.get_locked_in()){
                 // first time detected or player changed the answer
-
-                // TODO: Fix error below with info: initial value of reference to non-const must be an lvalue
-                
                 bool changed_answer = (found_player.get_area() != get_area_of_point(info.get_position_player(), center));
                 bool first_time = (found_player.get_time() == (time_t)(-1));
                 if(changed_answer || first_time){
@@ -101,7 +99,7 @@ void Player_Manager::update_player_info(Point2f& center, vector<Player> new_info
                     found_player.set_time(info.get_time());
                 }
                     // player has choosen his answer
-                else if(difftime(info.get_time(), found_player.get_time()) >= 5){ // difftime() result in seconds
+                else if(difftime(info.get_time(), found_player.get_time()) >= 500000000000){ // difftime() result in seconds
                     found_player.lock_in();
                 }
 
