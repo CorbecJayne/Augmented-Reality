@@ -7,32 +7,6 @@
 #define M_PI 3.1415926535897932384626433832795
 #endif
 
-
-void draw_snowman(){
-    // Draw 3 white spheres
-    glColor4f(1.0, 1.0, 1.0, 1.0);
-    drawSphere(0.8, 10, 10);
-    glTranslatef(0.0, 0.8, 0.0);
-    drawSphere(0.6, 10, 10);
-    glTranslatef(0.0, 0.6, 0.0);
-    drawSphere(0.4, 10, 10);
-
-    // Draw the eyes
-    glPushMatrix();
-    glColor4f(0.0, 0.0, 0.0, 1.0);
-    glTranslatef(0.2, 0.2, 0.2);
-    drawSphere(0.066, 10, 10);
-    glTranslatef(0, 0, -0.4);
-    drawSphere(0.066, 10, 10);
-    glPopMatrix();
-
-    // Draw a nose
-    glColor4f(1.0, 0.5, 0.0, 1.0);
-    glTranslatef(0.3, 0.0, 0.0);
-    glRotatef(90, 0, 1, 0);
-    drawCone(0.1, 0.3, 10, 10);
-}
-
 void drawSphere(double r, int lats, int longs) {
     int i, j;
     for(i = 0; i <= lats; i++) {
@@ -80,6 +54,32 @@ void drawCone(GLdouble base, GLdouble height, GLint slices, GLint stacks)
         glVertex3f(sin((double)angle) * base, cos((double)angle) * base, 0.f);
     }
     glEnd();
+}
+
+
+void draw_snowman(){
+    // Draw 3 white spheres
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    drawSphere(0.8, 10, 10);
+    glTranslatef(0.0, 0.8, 0.0);
+    drawSphere(0.6, 10, 10);
+    glTranslatef(0.0, 0.6, 0.0);
+    drawSphere(0.4, 10, 10);
+
+    // Draw the eyes
+    glPushMatrix();
+    glColor4f(0.0, 0.0, 0.0, 1.0);
+    glTranslatef(0.2, 0.2, 0.2);
+    drawSphere(0.066, 10, 10);
+    glTranslatef(0, 0, -0.4);
+    drawSphere(0.066, 10, 10);
+    glPopMatrix();
+
+    // Draw a nose
+    glColor4f(1.0, 0.5, 0.0, 1.0);
+    glTranslatef(0.3, 0.0, 0.0);
+    glRotatef(90, 0, 1, 0);
+    drawCone(0.1, 0.3, 10, 10);
 }
 
 void draw_player(int player_id, double r, int lats, int longs){
