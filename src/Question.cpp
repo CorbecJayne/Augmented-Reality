@@ -65,9 +65,9 @@ const string Question::to_string() const {
     stream<<question<<"\n";
     for(int i=0;i<4;i++){
         if(i==correct_position){
-          stream<<correct_answer;
+          stream<<"question area "<<i<<": "<<correct_answer;
         }else{
-            stream<<answers.at(answers.size()-1);
+            stream<<"question area "<<i<<": "<<answers.at(answers.size()-1);
             answers.pop_back();
         }
         stream<<"\n";
