@@ -22,7 +22,7 @@ class Marker_Tracking {
 
 public:
 	// returns all currently detected markers
-	 std::vector<Player>detect_markers(cv::Mat);
+	 std::vector<Player>detect_markers(cv::Mat,float resultMatrix[]);
 
 	 cv::Mat calculate_Stripe(double dx, double dy, MyStrip & st);
 

@@ -28,7 +28,7 @@ Mat videoStreamFrameGray;
 Mat videoStreamFrameOutput;
 
 
-vector<Player> Marker_Tracking::detect_markers(Mat input) {
+vector<Player> Marker_Tracking::detect_markers(Mat input,float resultMatrix[]) {
 
 	vector<Player> output;
 
@@ -583,7 +583,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 
 		// 4x4 -> Rotation | Translation
 		//        0  0  0  | 1 -> (Homogene coordinates to combine rotation, translation and scaling)
-		float resultMatrix[16];
+		//float resultMatrix[16];
 		// Marker size in meters!
 		estimateSquarePose(resultMatrix, (Point2f*)corners, 0.04346);
 

@@ -5,7 +5,7 @@
 
 #include <GLFW/glfw3.h>
 
-#include "DrawPrimitives.h"
+#include "Draw_Primitives.h"
 #include <iostream>
 #include <iomanip>
 
@@ -260,8 +260,8 @@ int main(int argc, char* argv[]) {
 
     int i=1;
 
-	while (true){
-	    //only 10 questions
+    while (true){
+        //only 10 questions
         if(i>=10){
             break;
         }
@@ -286,28 +286,26 @@ int main(int argc, char* argv[]) {
         }
 
 
-		//std::cout << question.to_string() << endl;
+        //std::cout << question.to_string() << endl;
 
-		//detect markers
+        //detect markers
 
         cap >> frame;
-        vector<Player> new_infos = tracking.detect_markers(frame);
+        vector<Player> new_infos = tracking.detect_markers(frame,resultMatrix);
         //imshow(Wname, frame);
-        for (const Player& player : new_infos){
-            // std::cout << "DEBUG: " << player.get_marker_id() << endl;
-        }
-		//compare 
-		p_manager.update_player_info(center,new_infos);
+
+        //compare
+        p_manager.update_player_info(center,new_infos);
 
         for(Player p:p_manager.get_players()){
             //cout<<p.get_points()<<endl;
         }
 
         // Track a marker and get the pose of the marker
-        markerTracker.findMarker(img_bgr, resultMatrix);
+        //markerTracker.findMarker(img_bgr, resultMatrix);
 
         // Render here
-        display(window, img_bgr, resultMatrix);
+        display(window, frame, resultMatrix);
 
         // Swap front and back buffers
         glfwSwapBuffers(window);
@@ -315,11 +313,11 @@ int main(int argc, char* argv[]) {
         // Poll for and process events
         glfwPollEvents();
 
-		int key = waitKey(10);
-		if (key == 27) {
+        int key = waitKey(10);
+        if (key == 27) {
             break;
         }
-	}
+    }
 
     // Important -> Avoid memory leaks!
     glfwTerminate();
