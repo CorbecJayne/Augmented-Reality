@@ -8,29 +8,6 @@
 #endif
 
 
-void draw_player(int player_id, double r, int lats, int longs){
-	if(player_id == 1){
-		glColor4f(1.0, 0.0, 0.0, 1.0);
-		drawSphere(r,lats,longs);
-	}
-	else if(player_id == 2){
-		glColor4f(0.0, 1.0, 0.0, 1.0);
-		drawSphere(r,lats,longs);
-	}
-	else if(player_id == 3){
-		glColor4f(0.0, 0.0, 1.0, 1.0);
-		drawSphere(r,lats,longs);
-	}
-	else if(player_id == 4){
-		glColor4f(0.5, 0.0, 0.5, 1.0);
-		drawSphere(r,lats,longs);
-	}
-	else{
-		draw_snowman();
-	}
-}
-
-
 void draw_snowman(){
 	// Draw 3 white spheres
 	glColor4f(1.0, 1.0, 1.0, 1.0);
@@ -103,4 +80,26 @@ void drawCone(GLdouble base, GLdouble height, GLint slices, GLint stacks)
 		glVertex3f(sin((double)angle) * base, cos((double)angle) * base, 0.f);
 	}
 	glEnd();
+}
+
+void draw_player(int player_id, double r, int lats, int longs){
+	if(player_id == 1){
+		glColor4f(1.0, 0.0, 0.0, 1.0);
+		drawSphere(r,lats,longs);
+	}
+	else if(player_id == 2){
+		glColor4f(0.0, 1.0, 0.0, 1.0);
+		drawSphere(r,lats,longs);
+	}
+	else if(player_id == 3){
+		glColor4f(0.0, 0.0, 1.0, 1.0);
+		drawSphere(r,lats,longs);
+	}
+	else if(player_id == 4){
+		glColor4f(0.5, 0.0, 0.5, 1.0);
+		drawSphere(r,lats,longs);
+	}
+	else{
+		draw_snowman();
+	}
 }
