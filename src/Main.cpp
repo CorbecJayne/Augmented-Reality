@@ -33,18 +33,20 @@ int main() {
 	center.y=0;
 	//center = tracking.calibrate();
 
+    Question question = db.getNextQuestion();
+
 	while (true){
 
         //if all locked in
         if(p_manager.all_locked()){
             //retrieve question
-            Question question = db.getNextQuestion();
+            question = db.getNextQuestion();
             cout<<question.to_string()<<endl;
             //mark correct answer
             //	ui_manager.display(question.getCorrectAnswer());
 
             //add points depending on if correct & order
-            //	p_manager.give_score(question.getCorrectPosition());
+            p_manager.give_score(question.getCorrectPosition());
 
             //display player info
             p_manager.reset_players();
@@ -64,9 +66,11 @@ int main() {
         }
 		//compare 
 		p_manager.update_player_info(center,new_infos);
-        for(auto & player:p_manager.get_players()){
-            cout<<"area of player "<<player.get_player_id()<<" : "<<player.get_area()<<endl;
+
+        for(Player p:p_manager.get_players()){
+            cout<<p.get_points()<<endl;
         }
+
 		int key = waitKey(10);
 		if (key == 27) {
             break;

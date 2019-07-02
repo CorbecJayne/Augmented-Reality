@@ -622,7 +622,6 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		if(!(std::find(distinct_marker_ids.begin(), distinct_marker_ids.end(), code) != distinct_marker_ids.end())) {
 			// distinct_marker_ids does not contain code
 			distinct_marker_ids.push_back(code);
-			cout << "point" << x  << y << endl;
 			marker_positions.push_back(Point2f(x, y));
 		}
 
@@ -641,7 +640,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 	isFirstMarker = true;
 
 	time_t timestamp = time(nullptr);
-	cout << "all position" << marker_positions << endl;
+
 	for (int i = 0; i < distinct_marker_ids.size(); i++) {
 		Player nextPlayer = Player(marker_positions[i], distinct_marker_ids[i], timestamp);
 		output.push_back(nextPlayer);

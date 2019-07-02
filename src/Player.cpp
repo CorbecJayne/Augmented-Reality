@@ -3,10 +3,10 @@
 #include <opencv2/opencv.hpp>
 
 Player::Player(int player_Id, int marker_Id) :
-    player_Id(player_Id), marker_Id(marker_Id), locked_in(true), points(0), area(-1), position_player(cv::Point2f(-1,-1)), time((time_t)(-1)) {}
+    player_Id(player_Id), marker_Id(marker_Id), locked_in(false), points(0), area(-1), position_player(cv::Point2f(-1,-1)), time((time_t)(-1)) {}
 
 Player::Player(cv::Point2f position_player, int marker_Id, time_t time) :
-    player_Id(-1), marker_Id(marker_Id), locked_in(true), points(0), area(-1), position_player(position_player), time(time) {}
+    player_Id(-1), marker_Id(marker_Id), locked_in(false), points(0), area(-1), position_player(position_player), time(time) {}
 
 void Player::set_time(time_t t) {
     Player::time=t;
