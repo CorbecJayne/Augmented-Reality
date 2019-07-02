@@ -61,7 +61,7 @@ class Player_Manager{
 	 * @brief Set the area of the player based on its position
 	 * 
 	 */
-    void set_areas(cv::Point& center);
+    void set_areas(cv::Point2f& center);
 	
 	/**
 	 * @brief Checks if all player have answered
@@ -75,7 +75,7 @@ class Player_Manager{
 	 * @brief Set lock, time, position and areas of player if necessary
 	 * 
 	 */
-    void update_player_info(cv::Point& center, std::vector<Player> new_info);
+    void update_player_info(cv::Point2f& center, std::vector<Player> new_info);
 
 	/**
 	 * @brief Find the player with the specified marker id
@@ -92,6 +92,6 @@ class Player_Manager{
 	 * bottom_left  :   2
 	 * bottom_right :   3
 	 */
-	int get_area_of_point(cv::Point p, cv::Point& center);
+	int get_area_of_point(cv::Point2f p, cv::Point2f& center);
 
 };

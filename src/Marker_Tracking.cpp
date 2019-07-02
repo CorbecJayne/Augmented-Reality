@@ -604,9 +604,11 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		x = resultMatrix[3];
 		y = resultMatrix[7];
 		z = resultMatrix[11];
+
+		//cout<< "x = "<<x <<" y = " <<y <<endl;
 		// Euclidian distance
-		cout << "length: " << sqrt(x* x + y * y + z * z) << "\n";
-		cout << "\n";
+		//cout << "length: " << sqrt(x* x + y * y + z * z) << "\n";
+		//cout << "\n";
 
 		#if CHECKPOINTS
 		if ((k % checkpoint_fraction) == 0){

@@ -21,61 +21,59 @@ int main() {
 		return -1;
 	}
 	string Wname = "Frame Capture";
-	//namedWindow(Wname);
+	namedWindow(Wname);
 
 	//instantiate Player Manager 
 	Player_Manager p_manager = Player_Manager();
 
 	//instantiate Marker_Tracking & calibrate
 	Marker_Tracking tracking;
-	Point center;
+	Point2f center;
+	center.x=0;
+	center.y=0;
 	//center = tracking.calibrate();
 
-	// get next camera frame
+	while (true){
 
-	int i = 0;
-	while (i < 10)
-	{
+        //if all locked in
+        if(p_manager.all_locked()){
+            //retrieve question
+            Question question = db.getNextQuestion();
+            cout<<question.to_string()<<endl;
+            //mark correct answer
+            //	ui_manager.display(question.getCorrectAnswer());
 
-		//retrieve question
-		Question question = db.getNextQuestion();
-		
-		//ui_manager show current question + answer
+            //add points depending on if correct & order
+            //	p_manager.give_score(question.getCorrectPosition());
+
+            //display player info
+            p_manager.reset_players();
+
+        }
+
+
 		//std::cout << question.to_string() << endl;
 
 		//detect markers
-		for (int i = 0; i < 100; i++){
-			cap >> frame;
-			vector<Player> new_infos = tracking.detect_markers(frame);
-			for (Player player : new_infos){
-				std::cout << "DEBUG: " << player.get_marker_id() << endl;
-			}
-		}  
 
-		
+        cap >> frame;
+        vector<Player> new_infos = tracking.detect_markers(frame);
+        imshow(Wname, frame);
+        for (const Player& player : new_infos){
+            std::cout << "DEBUG: " << player.get_marker_id() << endl;
+        }
 		//compare 
-		//p_manager.update_player_info(center,new_infos);
-		//imshow(Wname, frame);
+		p_manager.update_player_info(center,new_infos);
+        for(auto & player:p_manager.get_players()){
+            cout<<"area of player "<<player.get_player_id()<<" : "<<player.get_area()<<endl;
+        }
 		int key = waitKey(10);
-		if (key == 27){
-			break;
-		}
-
-		i++;
+		if (key == 27) {
+            break;
+        }
 	}
 	
-	//if all locked in
-	//if(p_manager.all_locked()){
-		//mark correct answer
-	//	ui_manager.display(question.getCorrectAnswer());
-	
-		//add points depending on if correct & order
-	//	p_manager.give_score(question.getCorrectPosition());
-	
-		//display player info
-	//	ui_manager.display(p_manager.get_scores());
 
-	//	}
 	
 	//destroyWindow(Wname);
 	return 0;

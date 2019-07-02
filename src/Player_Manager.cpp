@@ -38,15 +38,10 @@ void Player_Manager::set_players(const vector<Player> &players) {
 Player_Manager::~Player_Manager() = default;
 
 Player_Manager::Player_Manager() {
-    // players.emplace_back(98);
-    // players.emplace_back(23);
-    // players.emplace_back(123);
-    // players.emplace_back(53);
-    
     players.emplace_back(1, 0x1C44);
     players.emplace_back(2, 0x0272);
-    players.emplace_back(3, 0x2121);
-    players.emplace_back(4, 0x0969);
+    players.emplace_back(3, 0x5A);
+    players.emplace_back(4, 0x690);
 }
 
 void Player_Manager::reset_players(){
@@ -55,7 +50,7 @@ void Player_Manager::reset_players(){
     }
 }
 
-void Player_Manager::set_areas(Point& center){
+void Player_Manager::set_areas(Point2f& center){
     for(auto & player: players){
         if(player.get_position_player() != Point(-1,-1)){
             Point position = player.get_position_player();
@@ -87,7 +82,7 @@ optional<reference_wrapper<Player>> Player_Manager::find_Player(int marker_id){
     return nullopt;
 }
 
-void Player_Manager::update_player_info(Point& center, vector<Player> new_info) {
+void Player_Manager::update_player_info(Point2f& center, vector<Player> new_info) {
     for(auto & info: new_info){
         int info_marker_id = info.get_marker_id();
         // NULL check: valid marker id
@@ -117,7 +112,7 @@ void Player_Manager::update_player_info(Point& center, vector<Player> new_info) 
 }
 
 // test where the point is based on center
-int Player_Manager::get_area_of_point(Point p, Point& center){
+int Player_Manager::get_area_of_point(Point2f p, Point2f& center){
     if(p.x>=center.x){
         if(p.y>=center.y){
             return 3;
