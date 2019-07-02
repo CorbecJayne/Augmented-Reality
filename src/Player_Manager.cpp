@@ -19,9 +19,11 @@ void Player_Manager::give_score(int correct_area) {
     int score=1000;
     for(auto it=players.begin(); it!=players.end()-1; it++){
         // add points
-        if((*it).get_area() == correct_area) (*it).add_points(score); 
-        // should the next player get the same points?
-        if((*it).get_time() != (*(it+1)).get_time()) score-=250;
+        if((*it).get_area() == correct_area){
+            (*it).add_points(score); 
+            // should the next player get the same points?
+            if((*it).get_time() != (*(it+1)).get_time()) score-=250;
+        }
     }
     // last player
     players.back().add_points(score);

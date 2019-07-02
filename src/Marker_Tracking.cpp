@@ -640,7 +640,6 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 	isFirstMarker = true;
 
 	time_t timestamp = time(nullptr);
-
 	for (int i = 0; i < distinct_marker_ids.size(); i++) {
 		Player nextPlayer = Player(marker_positions[i], distinct_marker_ids[i], timestamp);
 		output.push_back(nextPlayer);
