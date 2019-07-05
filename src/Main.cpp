@@ -79,7 +79,8 @@ void initGL(int argc, char *argv[]) {
 }
 
 
-void display(GLFWwindow* window, const cv::Mat &img_bgr, float resultMatrix[16]) {
+void display(GLFWwindow* window, const cv::Mat &img_bgr, vector<vector<float>>results,vector<Player> players) {
+
 
 // Added in Exercise 8 - Start *****************************************************************
 
@@ -105,11 +106,11 @@ void display(GLFWwindow* window, const cv::Mat &img_bgr, float resultMatrix[16])
     glPushMatrix();
     glLoadIdentity();
     // In the ortho view all objects stay the same size at every distance
-    glOrtho(0.0, camera_width, 0.0, camera_height,-1,1);
+    glOrtho(0.0, camera_width, 0.0, camera_height, -1, 1);
 
     // -> Render the camera picture as background texture
     // Making a raster of the image -> -1 otherwise overflow
-    glRasterPos2i(0, camera_height-1);
+    glRasterPos2i(0, camera_height - 1);
     // Load and render the camera image -> unsigned byte because of bkgnd as unsigned char array
     // bkgnd 3 channels -> pixelwise rendering
     glDrawPixels(camera_width, camera_height, GL_BGR_EXT, GL_UNSIGNED_BYTE, bkgnd);
@@ -125,48 +126,52 @@ void display(GLFWwindow* window, const cv::Mat &img_bgr, float resultMatrix[16])
 
     // Sadly doesn't work for Windows -> so we made own solution!
     //glLoadTransposeMatrixf(resultMatrix);
-
-    // -> Transpose the Modelview Matrix
-    float resultTransposedMatrix[16];
-    for (int x=0; x<4; ++x) {
-        for (int y=0; y<4; ++y) {
-            // Change columns to rows
-            resultTransposedMatrix[x*4+y] = resultMatrix[y*4+x];
+    int counter=0;
+    for(vector<float> result:results) {
+        counter++;
+        // -> Transpose the Modelview Matrix
+        float resultTransposedMatrix[16];
+        for (int x = 0; x < 4; ++x) {
+            for (int y = 0; y < 4; ++y) {
+                // Change columns to rows
+                resultTransposedMatrix[x * 4 + y] = result[y * 4 + x];
+            }
         }
-    }
 
-    // Load the transpose matrix
-    glLoadMatrixf(resultTransposedMatrix);
+        // Load the transpose matrix
+        glLoadMatrixf(resultTransposedMatrix);
 
-    // Rotate 90 desgress in x-direction
-    glRotatef(-90, 1, 0, 0);
-    // Scale down!
-    glScalef(0.03, 0.03, 0.03);
+        // Rotate 90 desgress in x-direction
+        glRotatef(-90, 1, 0, 0);
+        // Scale down!
+        glScalef(0.03, 0.03, 0.03);
 
 // Added in Exercise 8 - End *****************************************************************
 
-    // Draw 3 white spheres
-    glColor4f(1.0, 1.0, 1.0, 1.0);
-    drawSphere(0.8, 10, 10);
-    glTranslatef(0.0, 0.8, 0.0);
-    drawSphere(0.6, 10, 10);
-    glTranslatef(0.0, 0.6, 0.0);
-    drawSphere(0.4, 10, 10);
+        draw_player(counter,1,10,10);
+        // Draw 3 white spheres
+        /*glColor4f(1.0, 1.0, 1.0, 1.0);
+        drawSphere(0.8, 10, 10);
+        glTranslatef(0.0, 0.8, 0.0);
+        drawSphere(0.6, 10, 10);
+        glTranslatef(0.0, 0.6, 0.0);
+        drawSphere(0.4, 10, 10);
 
-    // Draw the eyes
-    glPushMatrix();
-    glColor4f(0.0, 0.0, 0.0, 1.0);
-    glTranslatef(0.2, 0.2, 0.2);
-    drawSphere(0.066, 10, 10);
-    glTranslatef(0, 0, -0.4);
-    drawSphere(0.066, 10, 10);
-    glPopMatrix();
+        // Draw the eyes
+        glPushMatrix();
+        glColor4f(0.0, 0.0, 0.0, 1.0);
+        glTranslatef(0.2, 0.2, 0.2);
+        drawSphere(0.066, 10, 10);
+        glTranslatef(0, 0, -0.4);
+        drawSphere(0.066, 10, 10);
+        glPopMatrix();
 
-    // Draw a nose
-    glColor4f(1.0, 0.5, 0.0, 1.0);
-    glTranslatef(0.3, 0.0, 0.0);
-    glRotatef(90, 0, 1, 0);
-    drawCone(0.1, 0.3, 10, 10);
+        // Draw a nose
+        glColor4f(1.0, 0.5, 0.0, 1.0);
+        glTranslatef(0.3, 0.0, 0.0);
+        glRotatef(90, 0, 1, 0);
+        drawCone(0.1, 0.3, 10, 10);*/
+    }
 }
 
 
@@ -291,21 +296,32 @@ int main(int argc, char* argv[]) {
         //detect markers
 
         cap >> frame;
-        vector<Player> new_infos = tracking.detect_markers(frame,resultMatrix);
+        vector<Player> new_infos = tracking.detect_markers(frame);
         //imshow(Wname, frame);
 
         //compare
         p_manager.update_player_info(center,new_infos);
 
+        // Render here
+
+        vector<vector<float>> results;
         for(Player p:p_manager.get_players()){
             //cout<<p.get_points()<<endl;
+            vector<float> mat (16);
+            for(int i=0;i<16;i++){
+                mat[i]=p.get_result_matrix()[i];
+            }
+            results.push_back(mat);
+
         }
+        display(window,frame,results,p_manager.get_players());
 
-        // Track a marker and get the pose of the marker
-        //markerTracker.findMarker(img_bgr, resultMatrix);
-
-        // Render here
-        display(window, frame, resultMatrix);
+        /*float mat [16];
+        for(int i=0;i<16;i++){
+            mat[i]=p_manager.get_players()[0].getResultMatrix()[i];
+            //cout<<i<<":"<<mat[i]<<endl;
+        }
+        display(window,frame,mat);*/
 
         // Swap front and back buffers
         glfwSwapBuffers(window);

@@ -22,12 +22,15 @@ class Marker_Tracking {
 
 public:
 	// returns all currently detected markers
-	 std::vector<Player>detect_markers(cv::Mat,float resultMatrix[]);
+    std::vector<Player>detect_markers(cv::Mat);
 
 	 cv::Mat calculate_Stripe(double dx, double dy, MyStrip & st);
 
 	 int subpixSampleSafe(const cv::Mat& pSrc, const cv::Point2f& p);
-	 
+
+
+
+
 	 void calibrate();
 
 };

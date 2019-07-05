@@ -100,6 +100,8 @@ void Player_Manager::update_player_info(Point2f& center, vector<Player> new_info
                 if(changed_answer || first_time){
                     found_player.set_position_player(info.get_position_player());
                     found_player.set_time(info.get_time());
+                    found_player.set_result_matrix(info.get_result_matrix());
+
                 }
                     // player has choosen his answer
                 else if(difftime(info.get_time(), found_player.get_time()) >= 5){ // difftime() result in seconds
