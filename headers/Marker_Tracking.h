@@ -14,23 +14,12 @@ struct MyStrip {
 };
 
 class Marker_Tracking {
-	
-	int start_x;
-	int start_y;
-	int end_x;
-	int end_y;
 
 public:
 	// returns all currently detected markers
     std::vector<Player>detect_markers(cv::Mat);
 
-	 cv::Mat calculate_Stripe(double dx, double dy, MyStrip & st);
+	cv::Mat calculate_Stripe(double dx, double dy, MyStrip & st);
 
-	 int subpixSampleSafe(const cv::Mat& pSrc, const cv::Point2f& p);
-
-
-
-
-	 void calibrate();
-
+	int subpixSampleSafe(const cv::Mat& pSrc, const cv::Point2f& p);
 };

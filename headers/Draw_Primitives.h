@@ -103,3 +103,7 @@ void draw_player(int player_id, double r, int lats, int longs){
         draw_snowman();
     }
 }
+
+void draw_results(){
+
+}

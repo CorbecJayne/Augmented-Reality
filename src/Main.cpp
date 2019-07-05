@@ -24,15 +24,9 @@ using namespace cv;
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <iomanip>
-
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
-
-#define _USE_MATH_DEFINES
 #include <math.h>
-
-
-cv::VideoCapture cap;
 
 // Camera settings
 const int camera_width  = 640;
@@ -43,9 +37,6 @@ unsigned char bkgnd[camera_width * camera_height * 3];
 
 /* Program & OpenGL initialization */
 void initGL(int argc, char *argv[]) {
-
-// Added in Exercise 8 - End *****************************************************************
-
     // For our connection between OpenCV/OpenGL
     // Pixel storage/packing stuff -> how to handle the pixel on the graphics card
     // For glReadPixels​ -> Pixel representation in the frame buffer
@@ -54,8 +45,6 @@ void initGL(int argc, char *argv[]) {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     // Turn the texture coordinates from OpenCV to the texture coordinates OpenGL
     glPixelZoom(1.0, -1.0);
-
-// Added in Exercise 8 - End *****************************************************************
 
     // Enable and set colors
     glEnable(GL_COLOR_MATERIAL);
@@ -79,15 +68,9 @@ void initGL(int argc, char *argv[]) {
 }
 
 
-void display(GLFWwindow* window, const cv::Mat &img_bgr, vector<vector<float>>results,vector<Player> players) {
-
-
-// Added in Exercise 8 - Start *****************************************************************
-
+void display(GLFWwindow* window, const cv::Mat &img_bgr, const vector<vector<float>>&results,vector<Player> players) {
     // Copy picture data into bkgnd array
     memcpy(bkgnd, img_bgr.data, sizeof(bkgnd));
-
-// Added in Exercise 8 - End *****************************************************************
 
     // Clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -96,8 +79,6 @@ void display(GLFWwindow* window, const cv::Mat &img_bgr, vector<vector<float>>re
     glMatrixMode(GL_MODELVIEW);
     // No position changes
     glLoadIdentity();
-
-// Added in Exercise 8 - Start *****************************************************************
 
     glDisable(GL_DEPTH_TEST);
 
@@ -146,31 +127,7 @@ void display(GLFWwindow* window, const cv::Mat &img_bgr, vector<vector<float>>re
         // Scale down!
         glScalef(0.03, 0.03, 0.03);
 
-// Added in Exercise 8 - End *****************************************************************
-
-        draw_player(counter,1,10,10);
-        // Draw 3 white spheres
-        /*glColor4f(1.0, 1.0, 1.0, 1.0);
-        drawSphere(0.8, 10, 10);
-        glTranslatef(0.0, 0.8, 0.0);
-        drawSphere(0.6, 10, 10);
-        glTranslatef(0.0, 0.6, 0.0);
-        drawSphere(0.4, 10, 10);
-
-        // Draw the eyes
-        glPushMatrix();
-        glColor4f(0.0, 0.0, 0.0, 1.0);
-        glTranslatef(0.2, 0.2, 0.2);
-        drawSphere(0.066, 10, 10);
-        glTranslatef(0, 0, -0.4);
-        drawSphere(0.066, 10, 10);
-        glPopMatrix();
-
-        // Draw a nose
-        glColor4f(1.0, 0.5, 0.0, 1.0);
-        glTranslatef(0.3, 0.0, 0.0);
-        glRotatef(90, 0, 1, 0);
-        drawCone(0.1, 0.3, 10, 10);*/
+        draw_player(counter,0.3,10,10);
     }
 }
 
@@ -225,21 +182,16 @@ int main(int argc, char* argv[]) {
     initGL(argc, argv);
 
     // Setup OpenCV
-    cv::Mat img_bgr;
+    Mat img_bgr;
     // Get video stream
     //initVideoStream(cap);
     // [m]
-    const double kMarkerSize = 0.045;
-    // Constructor with the marker size (similar to Exercise 5)
-    //MarkerTracker markerTracker(kMarkerSize);
 
-    float resultMatrix[16];
 	Mat frame;
 	VideoCapture cap(0);
 	
 	//instantiate db & retrieve questions
 	Db_Api db;
-
 	db.retrieveQuestions();
 	
 	if (!cap.isOpened())
@@ -247,18 +199,15 @@ int main(int argc, char* argv[]) {
 		cout << "NO capture" << endl;
 		return -1;
 	}
-	//string Wname = "Frame Capture";
-	//namedWindow(Wname);
 
 	//instantiate Player Manager 
 	Player_Manager p_manager = Player_Manager();
 
 	//instantiate Marker_Tracking & calibrate
-	Marker_Tracking tracking;
+	Marker_Tracking tracking{};
 	Point2f center;
 	center.x=0;
 	center.y=0;
-	//center = tracking.calibrate();
 
     Question question = db.getNextQuestion();
     cout<<question.to_string()<<endl;
@@ -285,9 +234,6 @@ int main(int argc, char* argv[]) {
 
             //reset players
             p_manager.reset_players();
-
-
-
         }
 
 
@@ -305,23 +251,16 @@ int main(int argc, char* argv[]) {
         // Render here
 
         vector<vector<float>> results;
-        for(Player p:p_manager.get_players()){
+        for(const Player& p:p_manager.get_players()){
             //cout<<p.get_points()<<endl;
             vector<float> mat (16);
-            for(int i=0;i<16;i++){
-                mat[i]=p.get_result_matrix()[i];
+            for(int j=0;j<16;j++){
+                mat[j]=p.get_result_matrix()[j];
             }
             results.push_back(mat);
 
         }
         display(window,frame,results,p_manager.get_players());
-
-        /*float mat [16];
-        for(int i=0;i<16;i++){
-            mat[i]=p_manager.get_players()[0].getResultMatrix()[i];
-            //cout<<i<<":"<<mat[i]<<endl;
-        }
-        display(window,frame,mat);*/
 
         // Swap front and back buffers
         glfwSwapBuffers(window);
@@ -338,7 +277,6 @@ int main(int argc, char* argv[]) {
     // Important -> Avoid memory leaks!
     glfwTerminate();
 
-	
 	//destroyWindow(Wname);
 	return 0;
 }

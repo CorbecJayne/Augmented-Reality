@@ -25,7 +25,7 @@ public:
      * category 18 is computer science
      * difficulty can be empty, easy, medium, hard
      */
-    int retrieveQuestions(int t_amount=10,int t_category=-1,std::string t_difficulty="");
+    int retrieveQuestions(int t_amount=10,int t_category=-1,const std::string& t_difficulty="");
 
     static size_t WriteCallback(void *contents, size_t t_size, size_t t_nmemb, void *userp);
 
@@ -33,10 +33,6 @@ public:
      * placing each into the questions vector
      */
     void parseQuestions(const std::string& t_input,int t_amount);
-
-    void cleanQuestions();
-
-    void printQuestions();
 
     Question getNextQuestion();
 };

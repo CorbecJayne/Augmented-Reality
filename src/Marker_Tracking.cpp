@@ -574,12 +574,12 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		// Normally we should do a camera calibration to get the camera paramters such as focal length
 		// Two ways: Inner parameters, e.g. focal length (intrinsic parameters); camera with 6 dof (R|T) (extrinsic parameters)
 		// Transfer screen coords to camera coords -> To get to the principel point
-		for (int i = 0; i < 4; i++) {
+		for (auto & corner : corners) {
 			// Here you have to use your own camera resolution (x) * 0.5
-			corners[i].x -= 320;  //0.5 * (end_x - start_x);
+			corner.x -= 320;  //0.5 * (end_x - start_x);
 			// -(corners.y) -> is neeeded because y is inverted
 			// Here you have to use your own camera resolution (y) * 0.5
-			corners[i].y = -corners[i].y + 240;  //0.5 * (end_y - start_y);
+			corner.y = -corner.y + 240;  //0.5 * (end_y - start_y);
 		}
 
 		// 4x4 -> Rotation | Translation
@@ -633,7 +633,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		if(!(std::find(distinct_marker_ids.begin(), distinct_marker_ids.end(), code) != distinct_marker_ids.end())) {
 			// distinct_marker_ids does not contain code
 			distinct_marker_ids.push_back(code);
-			marker_positions.push_back(Point2f(x, y));
+			marker_positions.emplace_back(x, y);
             result_matrix_vec.push_back(result_matrix_arr);
 		}
 

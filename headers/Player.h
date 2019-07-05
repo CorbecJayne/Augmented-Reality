@@ -23,8 +23,6 @@ class Player
 
 
 public:
-    Player(time_t time);
-
 	Player(int player_Id, int marker_Id);
 
     Player(cv::Point2f position_player, int marker_Id, time_t time, std::vector<float> result_matrix);

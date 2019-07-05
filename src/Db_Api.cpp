@@ -13,7 +13,7 @@
 
 using namespace std;
 
-int Db_Api::retrieveQuestions(int t_amount,int t_category,string t_difficulty) {
+int Db_Api::retrieveQuestions(int t_amount,int t_category,const string& t_difficulty) {
     CURL *curl;
     CURLcode res;
     string readBuffer;
@@ -71,12 +71,6 @@ int Db_Api::retrieveQuestions(int t_amount,int t_category,string t_difficulty) {
     parseQuestions(readBuffer,t_amount);
 
     return 0;
-}
-
-void Db_Api::printQuestions(){
-    for(auto & question : questions){
-        cout << "Question : " << question.getQuestion() <<"\ncorrect answer : " <<question.getCorrectAnswer()<<" incorrect answers : "<<question.getWrongAnswerOne()<<","<<question.getWrongAnswerTwo()<<","<<question.getWrongAnswerThree()<<endl;
-    }
 }
 
 void Db_Api::parseQuestions(const string& t_input,int t_amount){
@@ -143,6 +137,7 @@ Question Db_Api::getNextQuestion() {
         return questions[counter++];
     }else{
         cout<<"no questions left"<<endl;
+        return Question();
     }
 }
 
