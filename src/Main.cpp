@@ -274,6 +274,10 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    //put this in a while loop with a waitkey or timeout
+    draw_results();
+
+
     // Important -> Avoid memory leaks!
     glfwTerminate();
 
