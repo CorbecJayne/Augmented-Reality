@@ -94,15 +94,16 @@ void Player_Manager::update_player_info(Point2f& center, vector<Player> new_info
             Player& found_player = *maybe_player;
             // not locked in
             if(!found_player.get_locked_in()){
+                found_player.set_position_player(info.get_position_player());
+                found_player.set_result_matrix(info.get_result_matrix());
                 // first time detected or player changed the answer
                 bool changed_answer = (found_player.get_area() != get_area_of_point(info.get_position_player(), center));
                 bool first_time = (found_player.get_time() == (time_t)(-1));
                 if(changed_answer || first_time){
-                    found_player.set_position_player(info.get_position_player());
-                    found_player.set_time(info.get_time());
-                    found_player.set_result_matrix(info.get_result_matrix());
 
+                    found_player.set_time(info.get_time());
                 }
+
                     // player has choosen his answer
                 else if(difftime(info.get_time(), found_player.get_time()) >= 5){ // difftime() result in seconds
                     found_player.lock_in();
