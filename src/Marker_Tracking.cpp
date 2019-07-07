@@ -66,8 +66,9 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 
 	//drawContours(imgFiltered, contours, -1, Scalar(0, 255, 0), 4, 1);
 
-	vector<int> distinct_marker_ids;
-	vector<Point2f> marker_positions;
+    vector<int> distinct_marker_ids;
+    vector<Point2f> marker_positions;
+    vector<vector<float>> result_matrix_vec;
 
 	#if CHECKPOINTS
 	std::cout << "Checkpoint 1: Found contours" <<  endl;
@@ -573,19 +574,20 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		// Normally we should do a camera calibration to get the camera paramters such as focal length
 		// Two ways: Inner parameters, e.g. focal length (intrinsic parameters); camera with 6 dof (R|T) (extrinsic parameters)
 		// Transfer screen coords to camera coords -> To get to the principel point
-		for (int i = 0; i < 4; i++) {
+		for (auto & corner : corners) {
 			// Here you have to use your own camera resolution (x) * 0.5
-			corners[i].x -= 320;  //0.5 * (end_x - start_x);
+			corner.x -= 320;  //0.5 * (end_x - start_x);
 			// -(corners.y) -> is neeeded because y is inverted
 			// Here you have to use your own camera resolution (y) * 0.5
-			corners[i].y = -corners[i].y + 240;  //0.5 * (end_y - start_y);
+			corner.y = -corner.y + 240;  //0.5 * (end_y - start_y);
 		}
 
 		// 4x4 -> Rotation | Translation
 		//        0  0  0  | 1 -> (Homogene coordinates to combine rotation, translation and scaling)
 		float resultMatrix[16];
 		// Marker size in meters!
-		estimateSquarePose(resultMatrix, (Point2f*)corners, 0.04346);
+
+        estimateSquarePose(resultMatrix, (Point2f*)corners, 0.04346);
 
 		#if DEBUG
 		// This part is only for printing
@@ -615,14 +617,24 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 		if ((k % checkpoint_fraction) == 0){
 			std::cout << "Checkpoint 7: Transformed marker coordinates to screen coordinates" << endl;
 		}
-		#endif
+        #endif
+
+
+
+        vector<float> result_matrix_arr{};
+        for (int i = 0; i < 16; ++i) {
+            result_matrix_arr.push_back(resultMatrix[i]);
+        }
+
+        int i=0;
 
 		// TODO: check whether positions are correct, was z-axis = direction of camera?
 		// Add Marker to marker vector, if its code is not represented yet
 		if(!(std::find(distinct_marker_ids.begin(), distinct_marker_ids.end(), code) != distinct_marker_ids.end())) {
 			// distinct_marker_ids does not contain code
 			distinct_marker_ids.push_back(code);
-			marker_positions.push_back(Point2f(x, y));
+			marker_positions.emplace_back(x, y);
+            result_matrix_vec.push_back(result_matrix_arr);
 		}
 
 		// -----------------------------
@@ -639,11 +651,14 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 	isFirstStripe = true;
 	isFirstMarker = true;
 
-	time_t timestamp = time(nullptr);
-	for (int i = 0; i < distinct_marker_ids.size(); i++) {
-		Player nextPlayer = Player(marker_positions[i], distinct_marker_ids[i], timestamp);
-		output.push_back(nextPlayer);
-	}
+    time_t timestamp = time(nullptr);
+
+    if(distinct_marker_ids.size()==result_matrix_vec.size()) {
+        for (int i = 0; i < distinct_marker_ids.size(); i++) {
+            Player nextPlayer = Player(marker_positions[i], distinct_marker_ids[i], timestamp, result_matrix_vec[i]);
+            output.push_back(nextPlayer);
+        }
+    }
 
 	return output;
 }

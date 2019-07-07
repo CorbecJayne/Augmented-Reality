@@ -18,19 +18,21 @@ class Player
 	time_t time;
 	// If the current position/ answer counts as final, default:false
 	bool locked_in;
+	// pose of marker
+    std::vector<float> result_matrix;
 
 
 public:
-    Player(time_t time);
-
 	Player(int player_Id, int marker_Id);
 
-	Player(cv::Point2f position_player, int marker_Id, time_t time);
+    Player(cv::Point2f position_player, int marker_Id, time_t time, std::vector<float> result_matrix);
 
-	/**
-	 * @brief Reset position, area, time, locked_in
-	 * 
-	 */
+    const std::vector<float> &get_result_matrix() const;
+
+    /**
+     * @brief Reset position, area, time, locked_in
+     *
+     */
 	void reset();
 
 	/**
@@ -123,4 +125,7 @@ public:
 	 * @param value 
 	 */
 	void set_locked_in(bool value);
+
+
+    void set_result_matrix(std::vector<float> result_mat);
 };

@@ -6,11 +6,11 @@
 using namespace std;
 using namespace cv;
 
-bool compare_players_time(Player one,Player two){
+bool compare_players_time(const Player& one,const Player& two){
     return one.get_time() < two.get_time();
 }
 
-bool compare_players_scores(Player one,Player two){
+bool compare_players_scores(const Player& one,const Player& two){
     return one.get_points() < two.get_points();
 }
 
@@ -86,7 +86,7 @@ optional<reference_wrapper<Player>> Player_Manager::find_Player(int marker_id){
     return nullopt;
 }
 
-void Player_Manager::update_player_info(Point2f& center, vector<Player> new_info) {
+void Player_Manager::update_player_info(Point2f& center, const vector<Player>& new_info) {
     for(auto & info: new_info){
         int info_marker_id = info.get_marker_id();
         // NULL check: valid marker id
@@ -94,13 +94,16 @@ void Player_Manager::update_player_info(Point2f& center, vector<Player> new_info
             Player& found_player = *maybe_player;
             // not locked in
             if(!found_player.get_locked_in()){
+                found_player.set_position_player(info.get_position_player());
+                found_player.set_result_matrix(info.get_result_matrix());
                 // first time detected or player changed the answer
                 bool changed_answer = (found_player.get_area() != get_area_of_point(info.get_position_player(), center));
                 bool first_time = (found_player.get_time() == (time_t)(-1));
                 if(changed_answer || first_time){
-                    found_player.set_position_player(info.get_position_player());
+
                     found_player.set_time(info.get_time());
                 }
+
                     // player has choosen his answer
                 else if(difftime(info.get_time(), found_player.get_time()) >= 5){ // difftime() result in seconds
                     found_player.lock_in();
@@ -113,7 +116,7 @@ void Player_Manager::update_player_info(Point2f& center, vector<Player> new_info
 }
 
 // test where the point is based on center
-int Player_Manager::get_area_of_point(Point2f p, Point2f& center){
+int Player_Manager::get_area_of_point(const Point2f& p, Point2f& center){
     if(p.x>=center.x){
         if(p.y>=center.y){
             return 3;

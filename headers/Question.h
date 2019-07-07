@@ -15,7 +15,7 @@ public:
 
     const std::string &getQuestion() const;
 
-    void setQuestion(const std::string &question);
+    void setQuestion(const std::string &quest);
 
     const std::string &getCorrectAnswer() const;
 

@@ -10,8 +10,8 @@ const string &Question::getQuestion() const {
     return question;
 }
 
-void Question::setQuestion(const string &question) {
-    Question::question = question;
+void Question::setQuestion(const string &quest) {
+    Question::question = quest;
 }
 
 const string &Question::getCorrectAnswer() const {

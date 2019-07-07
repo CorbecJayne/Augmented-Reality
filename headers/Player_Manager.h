@@ -75,7 +75,7 @@ class Player_Manager{
 	 * @brief Set lock, time, position and areas of player if necessary
 	 * 
 	 */
-    void update_player_info(cv::Point2f& center, std::vector<Player> new_info);
+    void update_player_info(cv::Point2f& center, const std::vector<Player>& new_info);
 
 	/**
 	 * @brief Find the player with the specified marker id
@@ -92,6 +92,6 @@ class Player_Manager{
 	 * top_left  	:   2
 	 * top_right 	:   3
 	 */
-	int get_area_of_point(cv::Point2f p, cv::Point2f& center);
+	int get_area_of_point(const cv::Point2f& p, cv::Point2f& center);
 
 };
