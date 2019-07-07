@@ -3,9 +3,6 @@
 #include <Marker_Tracking.h>
 #include <Player.h>
 
-#include <GLFW/glfw3.h>
-
-#include "Draw_Primitives.h"
 #include <iostream>
 #include <iomanip>
 
@@ -14,8 +11,6 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
-
-#include "Pose_Estimation.h"
 
 using namespace std;
 using namespace cv;
@@ -26,7 +21,9 @@ using namespace cv;
 #include <iomanip>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
-#include <math.h>
+
+#include "Draw_Primitives.h"
+#include "Pose_Estimation.h"
 
 // Camera settings
 const int camera_width  = 640;
@@ -127,7 +124,7 @@ void display(GLFWwindow* window, const cv::Mat &img_bgr, const vector<vector<flo
         // Scale down!
         glScalef(0.03, 0.03, 0.03);
 
-        draw_player(counter,0.3,10,10);
+        draw_player(counter);
     }
 }
 
@@ -275,7 +272,7 @@ int main(int argc, char* argv[]) {
     }
 
     //put this in a while loop with a waitkey or timeout
-    draw_results();
+   // draw_results();
 
 
     // Important -> Avoid memory leaks!
