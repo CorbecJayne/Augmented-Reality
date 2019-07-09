@@ -1,8 +1,10 @@
 #include<opencv2/opencv.hpp>
 #include<iostream>
+#include <Question.h>
 #include"Pose_Estimation.h"
 #include"Marker_Tracking.h"
 #include"Player.h"
+#include <tuple>
 
 using namespace cv;
 using namespace std;
@@ -10,9 +12,9 @@ using namespace std;
 #define THRESHOLD_VALUE 120
 
 #define CHECKPOINTS 0
-#define DEBUG 0
+#define DEBUG 1
 #define DEBUG_LOG 0
-#define DRAW_CONTOUR 0
+#define DRAW_CONTOUR 1
 #define DRAW_RECTANGLE 0
 #define LOG_ID 0
 
@@ -28,7 +30,7 @@ Mat videoStreamFrameGray;
 Mat videoStreamFrameOutput;
 
 
-vector<Player> Marker_Tracking::detect_markers(Mat input) {
+tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Question& question) {
 
 	vector<Player> output;
 
@@ -41,9 +43,9 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 
 	#if DEBUG
 	//namedWindow(stripWindow, CV_WINDOW_AUTOSIZE);
-	namedWindow(contoursWindow, CV_WINDOW_AUTOSIZE);
-	namedWindow(kWinName, CV_WINDOW_NORMAL);
-	resizeWindow(kWinName, 120, 120);
+	//namedWindow(contoursWindow, CV_WINDOW_AUTOSIZE);
+	//namedWindow(kWinName, CV_WINDOW_NORMAL);
+	//resizeWindow(kWinName, 120, 120);
 	#endif
 
 	Mat imgFiltered;
@@ -77,37 +79,44 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 	// size is always positive, so unsigned int -> size_t; if you have not initialized the vector it is -1, hence crash
 	for (size_t k = 0; k < contours.size(); k++) {
 
-		#if CHECKPOINTS
-		int checkpoint_fraction = 1;
-		#endif
+#if CHECKPOINTS
+        int checkpoint_fraction = 1;
+#endif
 
-		// collect all distinct markers ids
-
-
-		// -------------------------------------------------
-
-		// --- Process Contour ---
+        // collect all distinct markers ids
 
 
-		contour_t approx_contour;
+        // -------------------------------------------------
 
-		// Simplifying of the contour with the Ramer-Douglas-Peuker Algorithm
-		// true -> Only closed contours
-		// Approximation of old curve, the difference (epsilon) should not be bigger than: perimeter(->arcLength)*0.02
-		approxPolyDP(contours[k], approx_contour, arcLength(contours[k], true) * 0.02, true);
+        // --- Process Contour ---
 
-		// Convert to a usable rectangle
-		Rect r = boundingRect(approx_contour);
 
-		#if DRAW_CONTOUR
-		contour_vector_t cov, aprox;
-		cov.emplace_back(contours[k]);
-		aprox.emplace_back(approx_contour);
-		if (approx_contour.size() > 1) {
-			drawContours(imgFiltered, aprox, -1, Scalar(0, 255, 0), 4, 1);
-			drawContours(imgFiltered, cov, -1, Scalar(255, 0, 0), 4, 1);
-			continue;
-		}
+        contour_t approx_contour;
+
+        // Simplifying of the contour with the Ramer-Douglas-Peuker Algorithm
+        // true -> Only closed contours
+        // Approximation of old curve, the difference (epsilon) should not be bigger than: perimeter(->arcLength)*0.02
+        approxPolyDP(contours[k], approx_contour, arcLength(contours[k], true) * 0.02, true);
+
+        // Convert to a usable rectangle
+        Rect r = boundingRect(approx_contour);
+
+#if DRAW_CONTOUR
+        /*contour_vector_t cov, aprox;
+        cov.emplace_back(contours[k]);
+        aprox.emplace_back(approx_contour);
+        if (approx_contour.size() > 1) {
+            drawContours(imgFiltered, aprox, -1, Scalar(0, 255, 0), 4, 1);
+            drawContours(imgFiltered, cov, -1, Scalar(255, 0, 0), 4, 1);
+            continue;
+        }*/
+        String questionText = question.getQuestion();
+        for (int j = 0; j < questionText.size()/40+1; j++) {
+            putText(imgFiltered, questionText.substr(j+40), cvPoint(50,50+20*j),
+                CV_FONT_NORMAL, 0.8, cvScalar(16, 189, 0), 1, CV_AA);
+        }
+        //putText(imgFiltered, question.to_string(), cvPoint(200,200),
+               // CV_FONT_NORMAL, 1, cvScalar(16, 189, 0), 1, CV_AA);
 		#endif // DRAW_CONTOUR
 
 		#if DRAW_RECTANGLE
@@ -140,7 +149,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 
 		#if DEBUG
 		// 1 -> 1 contour, we have a closed contour, true -> closed, 4 -> thickness
-		polylines(imgFiltered, approx_contour, true, colour, THICKNESS_VALUE);
+		//polylines(imgFiltered, approx_contour, true, colour, THICKNESS_VALUE);
 		#endif
 
 		// Direction vector (x0,y0) and contained point (x1,y1) -> For each line -> 4x4 = 16
@@ -160,7 +169,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 
 			#if DEBUG
 			// Render the corners, 3 -> Radius, -1 filled circle
-			circle(imgFiltered, approx_contour[i], 3, CV_RGB(0, 255, 0), -1);
+			//circle(imgFiltered, approx_contour[i], 3, CV_RGB(0, 255, 0), -1);
 			#endif
 
 			// Euclidic distance, 7 -> parts, both directions dx and dy
@@ -186,7 +195,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 				p.y = (int)py;
 
 				#if DEBUG
-				circle(imgFiltered, p, 2, CV_RGB(0, 0, 255), -1);
+				//circle(imgFiltered, p, 2, CV_RGB(0, 0, 255), -1);
 				#endif
 
 				// Columns: Loop over 3 pixels
@@ -206,10 +215,10 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 
 						// The one (purple color) which is shown in the stripe window
 						#if DEBUG
-						if (isFirstStripe)
-							circle(imgFiltered, p2, 1, CV_RGB(255, 0, 255), -1);
-						else
-							circle(imgFiltered, p2, 1, CV_RGB(0, 255, 255), -1);
+						//if (isFirstStripe)
+						//	circle(imgFiltered, p2, 1, CV_RGB(255, 0, 255), -1);
+						//else
+						//	circle(imgFiltered, p2, 1, CV_RGB(0, 255, 255), -1);
 						#endif
 
 						// Combined Intensity of the subpixel, Ex 3
@@ -312,7 +321,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 
 				// Highlight the subpixel with blue color
 				#if DEBUG
-				circle(imgFiltered, edgeCenter, 2, CV_RGB(0, 0, 255), -1);
+				//circle(imgFiltered, edgeCenter, 2, CV_RGB(0, 0, 255), -1);
 				#endif
 
 				edgePointCenters[j - 1].x = edgeCenter.x;
@@ -325,7 +334,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 					// The intensity differences on the stripe
 					resize(imagePixelStripe, iplTmp, Size(100, 300));
 
-					imshow(stripWindow, iplTmp);
+					//imshow(stripWindow, iplTmp);
 					isFirstStripe = false;
 				}
 				#endif
@@ -362,7 +371,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 			p2.y = (int)lineParams[12 + i] + (int)(50.0 * lineParams[4 + i]);
 
 			// Draw line
-			line(imgFiltered, p1, p2, CV_RGB(0, 255, 255), 1, 8, 0);
+			//line(imgFiltered, p1, p2, CV_RGB(0, 255, 255), 1, 8, 0);
 			#endif
 		}
 
@@ -422,7 +431,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 			p.y = (int)corners[i].y;
 
 			#if DEBUG
-			circle(imgFiltered, p, 5, CV_RGB(255, 255, 0), -1);
+			//circle(imgFiltered, p, 5, CV_RGB(255, 255, 0), -1);
 			#endif
 
 		} // End of the loop to extract the exact corners
@@ -546,7 +555,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 
 		#if DEBUG
 		// Print ID
-		printf("Found: %04x\n", code);
+		//printf("Found: %04x\n", code);
 
 		// Show the first detected marker in the image
 		if (isFirstMarker) {
@@ -591,7 +600,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 
 		#if DEBUG
 		// This part is only for printing
-		for (int i = 0; i < 4; ++i) {
+		/*for (int i = 0; i < 4; ++i) {
 			for (int j = 0; j < 4; ++j) {
 				cout << setw(6); // Total 6
 				cout << setprecision(4); // Numbers of decimal places = 4 (of the 6)
@@ -600,7 +609,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 			}
 			cout << "\n";
 		}
-		cout << "\n";
+		cout << "\n";*/
 		#endif
 		float x, y, z;
 		// Translation values in the transformation matrix to calculate the distance between the marker and the camera
@@ -641,7 +650,8 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 	}
 
 	#if DEBUG
-	imshow(contoursWindow, imgFiltered);
+	//imshow("s",imgFiltered);
+	//input=imgFiltered.clone();
 	#endif
 
 	#if CHECKPOINTS	
@@ -653,6 +663,8 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
 
     time_t timestamp = time(nullptr);
 
+
+
     if(distinct_marker_ids.size()==result_matrix_vec.size()) {
         for (int i = 0; i < distinct_marker_ids.size(); i++) {
             Player nextPlayer = Player(marker_positions[i], distinct_marker_ids[i], timestamp, result_matrix_vec[i]);
@@ -660,7 +672,7 @@ vector<Player> Marker_Tracking::detect_markers(Mat input) {
         }
     }
 
-	return output;
+	return make_tuple(imgFiltered,output);
 }
 
 

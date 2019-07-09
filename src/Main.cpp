@@ -25,7 +25,6 @@ const int camera_height = 480;
 const int virtual_camera_angle = 30;
 unsigned char bkgnd[camera_width * camera_height * 3];
 
-const double duration;
 const double timeForQuestion = 15.0;
 
 
@@ -97,7 +96,7 @@ int main(int argc, char* argv[]) {
 
     int i=1;
 
-    duration = 0;
+    double duration = 0;
 
     clock_t start;
 
@@ -134,7 +133,8 @@ int main(int argc, char* argv[]) {
         //detect markers
 
         cap >> frame;
-        vector<Player> new_infos = tracking.detect_markers(frame);
+        tuple<Mat,vector<Player>> result = tracking.detect_markers(frame,question);
+        vector<Player> new_infos = get<1>(result);
         //imshow(Wname, frame);
 
         //compare
@@ -152,7 +152,7 @@ int main(int argc, char* argv[]) {
             results.push_back(mat);
 
         }
-        display(window,frame,results,p_manager.get_players());
+        display(window,get<0>(result),results,p_manager.get_players());
 
         // Swap front and back buffers
         glfwSwapBuffers(window);
