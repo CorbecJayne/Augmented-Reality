@@ -31,7 +31,7 @@ Mat videoStreamFrameGray;
 Mat videoStreamFrameOutput;
 
 
-tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Question& question) {
+tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Question& question, int camera_width, int camera_height) {
 
 	vector<Player> output;
 
@@ -582,10 +582,10 @@ tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Quest
 		// Transfer screen coords to camera coords -> To get to the principel point
 		for (auto & corner : corners) {
 			// Here you have to use your own camera resolution (x) * 0.5
-			corner.x -= 320;  //0.5 * (end_x - start_x);
-			// -(corners.y) -> is neeeded because y is inverted
+			corner.x -= camera_width *0.5; //here you have to use your own camera resolution (x) * 0.5 // 320;  //0.5 * (end_x - start_x);
+			// -(corners.y) -> is neeeded because y is inverted 
 			// Here you have to use your own camera resolution (y) * 0.5
-			corner.y = -corner.y + 240;  //0.5 * (end_y - start_y);
+			corner.y = -corner.y + camera_height *0.5; //here you have to use your own camera resolution (x) * 0.5 // 240;  //0.5 * (end_y - start_y);
 		}
 
 		// 4x4 -> Rotation | Translation

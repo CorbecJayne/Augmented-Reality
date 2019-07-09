@@ -105,7 +105,7 @@ void Player_Manager::update_player_info(Point2f& center, const vector<Player>& n
                 }
 
                     // player has choosen his answer
-                else if(difftime(info.get_time(), found_player.get_time()) >= 5){ // difftime() result in seconds
+                else if(difftime(info.get_time(), found_player.get_time()) >= 50000){ // difftime() result in seconds
                     found_player.lock_in();
                 }
 
