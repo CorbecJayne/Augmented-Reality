@@ -3,19 +3,6 @@
 #include <Marker_Tracking.h>
 #include <Player.h>
 
-#include <iostream>
-#include <iomanip>
-
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
-
-#define _USE_MATH_DEFINES
-#include <math.h>
-
-using namespace std;
-using namespace cv;
-
-
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <iomanip>
@@ -25,15 +12,172 @@ using namespace cv;
 #include "Draw_Primitives.h"
 #include "Pose_Estimation.h"
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
+using namespace std;
+using namespace cv;
+
+
 // Camera settings
 const int camera_width  = 640;
 const int camera_height = 480;
 const int virtual_camera_angle = 30;
 unsigned char bkgnd[camera_width * camera_height * 3];
 
+const double duration;
+const double timeForQuestion = 15.0;
+
 
 /* Program & OpenGL initialization */
-void initGL(int argc, char *argv[]) {
+void initGL(int argc, char *argv[]);
+
+void display(GLFWwindow* window, const cv::Mat &img_bgr, const vector<vector<float>>&results,vector<Player> players);
+
+void reshape( GLFWwindow* window, int width, int height );
+
+int main(int argc, char* argv[]) {
+    GLFWwindow* window;
+
+    // Initialize the library
+    if (!glfwInit())
+        return -1;
+
+    // Initialize the window system
+    // Create a windowed mode window and its OpenGL context
+    window = glfwCreateWindow(camera_width, camera_height, "Quizzar", NULL, NULL);
+    if (!window) {
+        glfwTerminate();
+        return -1;
+    }
+
+    // Set callback functions for GLFW
+    glfwSetFramebufferSizeCallback(window, reshape);
+
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
+
+    int window_width, window_height;
+    glfwGetFramebufferSize(window, &window_width, &window_height);
+    reshape(window, window_width, window_height);
+
+    // Initialize the GL library
+    initGL(argc, argv);
+
+    // Setup OpenCV
+    Mat img_bgr;
+    // Get video stream
+    //initVideoStream(cap);
+    // [m]
+
+	Mat frame;
+	VideoCapture cap(0);
+	
+	//instantiate db & retrieve questions
+	Db_Api db;
+	db.retrieveQuestions();
+	
+	if (!cap.isOpened())
+	{
+		cout << "NO capture" << endl;
+		return -1;
+	}
+
+	//instantiate Player Manager 
+	Player_Manager p_manager = Player_Manager();
+
+	//instantiate Marker_Tracking & calibrate
+	Marker_Tracking tracking{};
+	Point2f center;
+	center.x=0;
+	center.y=0;
+
+    Question question = db.getNextQuestion();
+    cout<<question.to_string()<<endl;
+
+    int i=1;
+
+    duration = 0;
+
+    clock_t start;
+
+    start = clock();
+
+    while (true){
+        duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+        //only 10 questions
+        if(i>=10){
+            break;
+        }
+        //if all locked in
+        if(p_manager.all_locked()||duration>timeForQuestion){
+            i++;
+            cout<<"correct answer : "<<question.getCorrectAnswer()<<endl;
+            //retrieve question
+            question = db.getNextQuestion();
+            cout<<question.to_string()<<endl;
+            //mark correct answer
+            //	ui_manager.display(question.getCorrectAnswer());
+
+            //add points depending on if correct & order
+            p_manager.give_score(question.getCorrectPosition());
+
+            //reset players
+            p_manager.reset_players();
+
+            start=clock();
+        }
+
+
+        //std::cout << question.to_string() << endl;
+
+        //detect markers
+
+        cap >> frame;
+        vector<Player> new_infos = tracking.detect_markers(frame);
+        //imshow(Wname, frame);
+
+        //compare
+        p_manager.update_player_info(center,new_infos);
+
+        // Render here
+
+        vector<vector<float>> results;
+        for(const Player& p:p_manager.get_players()){
+            //cout<<p.get_points()<<endl;
+            vector<float> mat (16);
+            for(int j=0;j<16;j++){
+                mat[j]=p.get_result_matrix()[j];
+            }
+            results.push_back(mat);
+
+        }
+        display(window,frame,results,p_manager.get_players());
+
+        // Swap front and back buffers
+        glfwSwapBuffers(window);
+
+        // Poll for and process events
+        glfwPollEvents();
+
+        int key = waitKey(10);
+        if (key == 27) {
+            break;
+        }
+    }
+
+    //put this in a while loop with a waitkey or timeout
+   // draw_results();
+
+
+    // Important -> Avoid memory leaks!
+    glfwTerminate();
+
+	//destroyWindow(Wname);
+	return 0;
+}
+
+void initGL(int argc, char *argv[]){
     // For our connection between OpenCV/OpenGL
     // Pixel storage/packing stuff -> how to handle the pixel on the graphics card
     // For glReadPixels​ -> Pixel representation in the frame buffer
@@ -64,8 +208,7 @@ void initGL(int argc, char *argv[]) {
     glEnable(GL_LIGHT0);
 }
 
-
-void display(GLFWwindow* window, const cv::Mat &img_bgr, const vector<vector<float>>&results,vector<Player> players) {
+void display(GLFWwindow* window, const cv::Mat &img_bgr, const vector<vector<float>>&results,vector<Player> players){
     // Copy picture data into bkgnd array
     memcpy(bkgnd, img_bgr.data, sizeof(bkgnd));
 
@@ -129,7 +272,7 @@ void display(GLFWwindow* window, const cv::Mat &img_bgr, const vector<vector<flo
 }
 
 
-void reshape( GLFWwindow* window, int width, int height ) {
+void reshape( GLFWwindow* window, int width, int height ){
     // Set a whole-window viewport
     glViewport( 0, 0, (GLsizei)width, (GLsizei)height );
 
@@ -148,136 +291,4 @@ void reshape( GLFWwindow* window, int width, int height ) {
     float left = ratio * bottom;
     float right = ratio * top;
     glFrustum(left, right, bottom, top, near, far);
-}
-
-int main(int argc, char* argv[]) {
-    GLFWwindow* window;
-
-    // Initialize the library
-    if (!glfwInit())
-        return -1;
-
-    // Initialize the window system
-    // Create a windowed mode window and its OpenGL context
-    window = glfwCreateWindow(camera_width, camera_height, "Quizzar", NULL, NULL);
-    if (!window) {
-        glfwTerminate();
-        return -1;
-    }
-
-    // Set callback functions for GLFW
-    glfwSetFramebufferSizeCallback(window, reshape);
-
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
-
-    int window_width, window_height;
-    glfwGetFramebufferSize(window, &window_width, &window_height);
-    reshape(window, window_width, window_height);
-
-    // Initialize the GL library
-    initGL(argc, argv);
-
-    // Setup OpenCV
-    Mat img_bgr;
-    // Get video stream
-    //initVideoStream(cap);
-    // [m]
-
-	Mat frame;
-	VideoCapture cap(0);
-	
-	//instantiate db & retrieve questions
-	Db_Api db;
-	db.retrieveQuestions();
-	
-	if (!cap.isOpened())
-	{
-		cout << "NO capture" << endl;
-		return -1;
-	}
-
-	//instantiate Player Manager 
-	Player_Manager p_manager = Player_Manager();
-
-	//instantiate Marker_Tracking & calibrate
-	Marker_Tracking tracking{};
-	Point2f center;
-	center.x=0;
-	center.y=0;
-
-    Question question = db.getNextQuestion();
-    cout<<question.to_string()<<endl;
-
-    int i=1;
-
-    while (true){
-        //only 10 questions
-        if(i>=10){
-            break;
-        }
-        //if all locked in
-        if(p_manager.all_locked()){
-            i++;
-            cout<<"correct answer : "<<question.getCorrectAnswer()<<endl;
-            //retrieve question
-            question = db.getNextQuestion();
-            cout<<question.to_string()<<endl;
-            //mark correct answer
-            //	ui_manager.display(question.getCorrectAnswer());
-
-            //add points depending on if correct & order
-            p_manager.give_score(question.getCorrectPosition());
-
-            //reset players
-            p_manager.reset_players();
-        }
-
-
-        //std::cout << question.to_string() << endl;
-
-        //detect markers
-
-        cap >> frame;
-        vector<Player> new_infos = tracking.detect_markers(frame);
-        //imshow(Wname, frame);
-
-        //compare
-        p_manager.update_player_info(center,new_infos);
-
-        // Render here
-
-        vector<vector<float>> results;
-        for(const Player& p:p_manager.get_players()){
-            //cout<<p.get_points()<<endl;
-            vector<float> mat (16);
-            for(int j=0;j<16;j++){
-                mat[j]=p.get_result_matrix()[j];
-            }
-            results.push_back(mat);
-
-        }
-        display(window,frame,results,p_manager.get_players());
-
-        // Swap front and back buffers
-        glfwSwapBuffers(window);
-
-        // Poll for and process events
-        glfwPollEvents();
-
-        int key = waitKey(10);
-        if (key == 27) {
-            break;
-        }
-    }
-
-    //put this in a while loop with a waitkey or timeout
-   // draw_results();
-
-
-    // Important -> Avoid memory leaks!
-    glfwTerminate();
-
-	//destroyWindow(Wname);
-	return 0;
 }
