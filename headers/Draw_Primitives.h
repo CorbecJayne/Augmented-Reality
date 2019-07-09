@@ -1,8 +1,6 @@
 
 //#define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
-
-
 #include <math.h>
 
 
@@ -125,7 +123,7 @@ void draw_rectangle(GLfloat red, GLfloat green, GLfloat blue){
 	glVertex3f( 1.0f, 1.0f,  1.0f);
 
 	glColor3f(red, green, blue);
-	glVertex3f( 1.0f, -1.0f,  1.0f);
+	glVertex3f( 1.0f, -1.0f,  1.0f); 
 	glVertex3f(-1.0f, -1.0f,  1.0f);
 	glVertex3f(-1.0f, -1.0f, -1.0f);
 	glVertex3f( 1.0f, -1.0f, -1.0f);
@@ -206,7 +204,7 @@ void draw_second_figure(){
 	glColor3f(red3, green3, blue3);
 	drawSphere(0.7, 10, 10);
 }
-
+ 
 void draw_third_figure(){
 	// blue
 	GLfloat red1 = 102 / 255.0;
@@ -252,7 +250,7 @@ void draw_fourth_figure(){
 	glTranslatef(-3.5, -0.55, 0.0);
 	glScalef(0.5, 0.5, 0.5);
 	draw_rectangle(red1, green1, blue1);
-}
+} 
 
 
 void draw_player(int player_id){

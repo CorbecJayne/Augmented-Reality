@@ -20,16 +20,16 @@ using namespace cv;
 
 
 // Camera settings
-const int camera_width  = 640;
-const int camera_height = 480;
-const int virtual_camera_angle = 30;
-unsigned char bkgnd[camera_width * camera_height * 3];
+const int camera_width  = 1280;         // change to change height and width, eg from 640 to 1280
+const int camera_height = 720;          // change to change height and width, eg from 480 to 720
+const int virtual_camera_angle = 60;    // change to change height and width, eg from 30 to 60
+unsigned char bkgnd[camera_width * camera_height * 3]; 
 
 const double timeForQuestion = 15.0;
 
 
 /* Program & OpenGL initialization */
-void initGL(int argc, char *argv[]);
+void initGL(int argc, char *argv[]); 
 
 void display(GLFWwindow* window, const cv::Mat &img_bgr, const vector<vector<float>>&results,vector<Player> players);
 
@@ -71,6 +71,8 @@ int main(int argc, char* argv[]) {
 
 	Mat frame;
 	VideoCapture cap(0);
+    cap.set(CV_CAP_PROP_FRAME_WIDTH, camera_width); //changed for different width and height
+	cap.set(CV_CAP_PROP_FRAME_HEIGHT, camera_height);
 	
 	//instantiate db & retrieve questions
 	Db_Api db;
@@ -128,17 +130,17 @@ int main(int argc, char* argv[]) {
         }
 
 
-        //std::cout << question.to_string() << endl;
+        //std::cout << question.to_string() << endl; 
 
         //detect markers
 
         cap >> frame;
-        tuple<Mat,vector<Player>> result = tracking.detect_markers(frame,question);
+        tuple<Mat,vector<Player> > result = tracking.detect_markers(frame, question, camera_width, camera_height);
         vector<Player> new_infos = get<1>(result);
         //imshow(Wname, frame);
 
         //compare
-        p_manager.update_player_info(center,new_infos);
+        p_manager.update_player_info(center,new_infos); 
 
         // Render here
 
@@ -159,8 +161,7 @@ int main(int argc, char* argv[]) {
 
         // Poll for and process events
         glfwPollEvents();
-
-        int key = waitKey(10);
+        int key = waitKey(10); // doesnt work
         if (key == 27) {
             break;
         }
@@ -201,11 +202,11 @@ void initGL(int argc, char *argv[]){
     GLfloat light_dif[] = {0.7, 0.7, 0.7, 1.0};
 
     // Enable lighting
-    glLightfv(GL_LIGHT0, GL_AMBIENT, light_amb);
-    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_dif);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
+    //glLightfv(GL_LIGHT0, GL_AMBIENT, light_amb);
+    //glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+    //glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_dif);
+    //glEnable(GL_LIGHTING);
+    //glEnable(GL_LIGHT0);
 }
 
 void display(GLFWwindow* window, const cv::Mat &img_bgr, const vector<vector<float>>&results,vector<Player> players){
@@ -265,7 +266,7 @@ void display(GLFWwindow* window, const cv::Mat &img_bgr, const vector<vector<flo
         // Rotate 90 desgress in x-direction
         glRotatef(-90, 1, 0, 0);
         // Scale down!
-        glScalef(0.03, 0.03, 0.03);
+        glScalef(0.02, 0.02, 0.02);
 
         draw_player(counter);
     }

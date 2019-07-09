@@ -18,7 +18,7 @@ class Marker_Tracking {
 
 public:
 	// returns all currently detected markers
-    std::tuple<cv::Mat,std::vector<Player>>detect_markers(cv::Mat&,const Question& question);
+    std::tuple<cv::Mat,std::vector<Player>>detect_markers(cv::Mat&,const Question& question, int camera_width, int camera_height);
 
 	cv::Mat calculate_Stripe(double dx, double dy, MyStrip & st);
 
