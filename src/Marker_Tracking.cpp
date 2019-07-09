@@ -5,6 +5,7 @@
 #include"Marker_Tracking.h"
 #include"Player.h"
 #include <tuple>
+#include <string>
 
 using namespace cv;
 using namespace std;
@@ -12,9 +13,9 @@ using namespace std;
 #define THRESHOLD_VALUE 120
 
 #define CHECKPOINTS 0
-#define DEBUG 1
+#define DEBUG 0
 #define DEBUG_LOG 0
-#define DRAW_CONTOUR 1
+#define DRAW_CONTOUR 0
 #define DRAW_RECTANGLE 0
 #define LOG_ID 0
 
@@ -110,11 +111,7 @@ tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Quest
             drawContours(imgFiltered, cov, -1, Scalar(255, 0, 0), 4, 1);
             continue;
         }*/
-        String questionText = question.getQuestion();
-        for (int j = 0; j < questionText.size()/40+1; j++) {
-            putText(imgFiltered, questionText.substr(j+40), cvPoint(50,50+20*j),
-                CV_FONT_NORMAL, 0.8, cvScalar(16, 189, 0), 1, CV_AA);
-        }
+
         //putText(imgFiltered, question.to_string(), cvPoint(200,200),
                // CV_FONT_NORMAL, 1, cvScalar(16, 189, 0), 1, CV_AA);
 		#endif // DRAW_CONTOUR
@@ -649,21 +646,41 @@ tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Quest
 		// -----------------------------
 	}
 
-	#if DEBUG
-	//imshow("s",imgFiltered);
-	//input=imgFiltered.clone();
-	#endif
-
-	#if CHECKPOINTS	
-	std::cout << "Checkpoint 8: End of function" << endl;
-	#endif
-
 	isFirstStripe = true;
 	isFirstMarker = true;
 
     time_t timestamp = time(nullptr);
 
+    //display question in top box
+    renderText(imgFiltered,question.getQuestion(),10,20,45);
 
+    //display answers in 4 boxes
+    vector<string> answers;
+    answers.push_back(question.getWrongAnswerOne());
+    answers.push_back(question.getWrongAnswerTwo());
+    answers.push_back(question.getWrongAnswerThree());
+    auto rng = default_random_engine {};
+    std::shuffle(begin(answers), end(answers), rng);
+
+    for(int j=0;j<4;j++){
+        String toDisplay;
+        if(j==question.getCorrectPosition()){
+            toDisplay=question.getCorrectAnswer();
+        }else{
+            toDisplay=answers.at(answers.size()-1);
+            answers.pop_back();
+        }
+        if(j==0){
+            renderText(imgFiltered,toDisplay,20,150,18);
+        }else if(j==1){
+            renderText(imgFiltered,toDisplay,450,150,18);
+        }else if (j==2){
+            renderText(imgFiltered,toDisplay,20,400,18);
+        }else{
+            renderText(imgFiltered,toDisplay,450,400,18);
+        }
+
+    }
 
     if(distinct_marker_ids.size()==result_matrix_vec.size()) {
         for (int i = 0; i < distinct_marker_ids.size(); i++) {
@@ -742,4 +759,33 @@ Mat Marker_Tracking::calculate_Stripe(double dx, double dy, MyStrip & st) {
 	return Mat(stripeSize, CV_8UC1);
 }
 
+
+void Marker_Tracking::renderText(Mat imgFiltered, string str, int x_start, int y_start,int size){
+    vector<string> words;
+    int oldIndex=0;
+    for (int j = 0; j < str.size(); j++) {
+        if(str.at(j)==' '){
+            words.push_back(str.substr(oldIndex,j-oldIndex));
+            oldIndex=j+1;
+        }
+    }
+    words.push_back(str.substr(oldIndex,str.size()-oldIndex));
+
+    stringstream stream;
+    vector<string> lines;
+    for(const auto & word : words){
+        if(stream.str().size()+word.size()>=size){
+            lines.push_back(stream.str());
+            stream.str("");
+            stream<<word<<" ";
+        }else{
+            stream<<word<<" ";
+        }
+    }
+    lines.push_back(stream.str());
+    for(int j=0;j<lines.size();j++) {
+        putText(imgFiltered, lines[j], cvPoint(x_start, y_start + j * 20),
+                CV_FONT_NORMAL, 0.8, cvScalar(16, 189, 0), 1, CV_AA);
+    }
+}
 

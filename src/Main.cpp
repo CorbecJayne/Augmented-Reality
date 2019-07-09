@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
     Question question = db.getNextQuestion();
     cout<<question.to_string()<<endl;
 
-    int i=1;
+    int i=0;
 
     double duration = 0;
 

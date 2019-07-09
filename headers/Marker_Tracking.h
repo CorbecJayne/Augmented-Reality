@@ -23,4 +23,6 @@ public:
 	cv::Mat calculate_Stripe(double dx, double dy, MyStrip & st);
 
 	int subpixSampleSafe(const cv::Mat& pSrc, const cv::Point2f& p);
+
+    void renderText(cv::Mat imgFiltered, std::string str, int x_start, int y_start,int size);
 };
