@@ -90,6 +90,9 @@ int main(int argc, char* argv[]) {
 	//instantiate Marker_Tracking & calibrate
 	Marker_Tracking tracking{};
 	
+    // set distance from center to question window at top of screen
+    p_manager.set_question_window_height_from_center(5/12 * camera_height);
+
     // adjust center to be at 7/12's of screen's height --> y = 1/12 height
     Point2f center;
 	center.x=0;

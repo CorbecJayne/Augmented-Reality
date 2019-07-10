@@ -117,6 +117,9 @@ void Player_Manager::update_player_info(Point2f& center, const vector<Player>& n
 
 // test where the point is based on center
 int Player_Manager::get_area_of_point(const Point2f& p, Point2f& center){
+    if(p.y<(center.y - question_window_height_from_center)){
+        return -1;
+    }
     if(p.x>=center.x){
         if(p.y>=center.y){
             return 3;

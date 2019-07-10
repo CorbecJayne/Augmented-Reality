@@ -12,6 +12,7 @@
 class Player_Manager{
 	
 	std::vector<Player> players;
+	int question_window_height_from_center;
 
 	public:
 
@@ -93,5 +94,18 @@ class Player_Manager{
 	 * top_right 	:   3
 	 */
 	int get_area_of_point(const cv::Point2f& p, cv::Point2f& center);
+
+
+	/* getter and setter for question window height, the window in which the question 
+	 * will be displayed
+	 * As a basis center of screen is used!!
+	 */ 
+	void set_question_window_height_from_center(int height){
+		question_window_height_from_center = height;
+	}
+
+	int get_question_window_height_from_center(){
+		return question_window_height_from_center;
+	}
 
 };
