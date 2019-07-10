@@ -89,9 +89,11 @@ int main(int argc, char* argv[]) {
 
 	//instantiate Marker_Tracking & calibrate
 	Marker_Tracking tracking{};
-	Point2f center;
+	
+    // adjust center to be at 7/12's of screen's height --> y = 1/12 height
+    Point2f center;
 	center.x=0;
-	center.y=0;
+	center.y = 1/12 * camera_height;
 
     Question question = db.getNextQuestion();
     cout<<question.to_string()<<endl;
