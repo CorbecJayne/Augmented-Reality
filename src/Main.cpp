@@ -112,16 +112,16 @@ int main(int argc, char* argv[]) {
     while (true){
         duration = (( std::clock() - start ) / (double) CLOCKS_PER_SEC)*2;
         //only 10 questions
-        if(i>=10){
+        if(i>=9){
             break;
         }
         //if all locked in
         if(p_manager.all_locked()||duration>timeForQuestion){
             i++;
-            cout<<"correct answer : "<<question.getCorrectAnswer()<<endl;
+            //cout<<"correct answer : "<<question.getCorrectAnswer()<<endl;
             //retrieve question
             question = db.getNextQuestion();
-            cout<<question.to_string()<<endl;
+            //cout<<question.to_string()<<endl;
             //mark correct answer
             //	ui_manager.display(question.getCorrectAnswer());
 
@@ -151,7 +151,6 @@ int main(int argc, char* argv[]) {
 
         vector<vector<float>> results;
         for(const Player& p:p_manager.get_players()){
-            //cout<<p.get_points()<<endl;
             vector<float> mat (16);
             for(int j=0;j<16;j++){
                 mat[j]=p.get_result_matrix()[j];
@@ -174,7 +173,9 @@ int main(int argc, char* argv[]) {
 
     //put this in a while loop with a waitkey or timeout
    // draw_results();
-
+    for(Player p:p_manager.get_players()){
+        cout<<"player id "<<p.get_player_id()<<" with score "<<p.get_points();
+    }
 
     // Important -> Avoid memory leaks!
     glfwTerminate();

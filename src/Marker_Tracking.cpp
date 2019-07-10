@@ -693,13 +693,13 @@ tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Quest
             answers.pop_back();
         }
         if(j==0){
-            renderText(imgFiltered,toDisplay,20,150,38);
-        }else if(j==1){
-            renderText(imgFiltered,toDisplay,760,150,38);
-        }else if (j==2){
             renderText(imgFiltered,toDisplay,20,450,38);
-        }else{
+        }else if(j==1){
             renderText(imgFiltered,toDisplay,760,450,38);
+        }else if (j==2){
+            renderText(imgFiltered,toDisplay,20,150,38);
+        }else{
+            renderText(imgFiltered,toDisplay,760,150,38);
         }
 
     }
