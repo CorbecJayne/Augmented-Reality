@@ -31,7 +31,7 @@ Mat videoStreamFrameGray;
 Mat videoStreamFrameOutput;
 
 
-tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Question& question, int camera_width, int camera_height) {
+tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Question& question, int camera_width, int camera_height, int timer) {
 
 	vector<Player> output;
 
@@ -651,8 +651,30 @@ tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Quest
 
     time_t timestamp = time(nullptr);
 
+    //display boxes
+    line(imgFiltered, Point(camera_width/2,camera_height/6+1), Point(camera_width/2,camera_height), (0,255,0), 5);
+    line(imgFiltered, Point(0,camera_height/12*7), Point(camera_width,camera_height/12*7), (0,255,0), 5);
+    line(imgFiltered, Point(0,camera_height/6), Point(camera_width,camera_height/6), (0,255,0), 2);
+
+    //display circle
+    if(timer>10){
+        circle(imgFiltered, cvPoint(camera_width/2,camera_height/12*7), 60, cvScalar(0,255,0),CV_FILLED, 8, 0);
+    }else if(timer>5){
+        circle(imgFiltered, cvPoint(camera_width/2,camera_height/12*7), 60, cvScalar(0, 230, 255),CV_FILLED, 8, 0);
+    }else{
+        circle(imgFiltered, cvPoint(camera_width/2,camera_height/12*7), 60, cvScalar(0,0,255),CV_FILLED, 8, 0);
+    }
+    circle(imgFiltered, cvPoint(camera_width/2,camera_height/12*7), 60, cvScalar(255,255,255),2, 8, 0);
+
+    //display timer
+    stringstream s;
+    s<<timer;
+    putText(imgFiltered, s.str(), cvPoint(camera_width/2-30,camera_height/12*7+15),
+            CV_FONT_NORMAL, 1.6, cvScalar(255,255, 255), 1, CV_AA);
+
+
     //display question in top box
-    renderText(imgFiltered,question.getQuestion(),10,20,45);
+    renderText(imgFiltered,question.getQuestion(),10,20,80);
 
     //display answers in 4 boxes
     vector<string> answers;
@@ -671,13 +693,13 @@ tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Quest
             answers.pop_back();
         }
         if(j==0){
-            renderText(imgFiltered,toDisplay,20,150,18);
+            renderText(imgFiltered,toDisplay,20,150,38);
         }else if(j==1){
-            renderText(imgFiltered,toDisplay,450,150,18);
+            renderText(imgFiltered,toDisplay,760,150,38);
         }else if (j==2){
-            renderText(imgFiltered,toDisplay,20,400,18);
+            renderText(imgFiltered,toDisplay,20,450,38);
         }else{
-            renderText(imgFiltered,toDisplay,450,400,18);
+            renderText(imgFiltered,toDisplay,760,450,38);
         }
 
     }
@@ -785,7 +807,7 @@ void Marker_Tracking::renderText(Mat imgFiltered, string str, int x_start, int y
     lines.push_back(stream.str());
     for(int j=0;j<lines.size();j++) {
         putText(imgFiltered, lines[j], cvPoint(x_start, y_start + j * 20),
-                CV_FONT_NORMAL, 0.8, cvScalar(16, 189, 0), 1, CV_AA);
+                CV_FONT_NORMAL, 0.8, cvScalar(136, 0, 214), 1, CV_AA);
     }
 }
 

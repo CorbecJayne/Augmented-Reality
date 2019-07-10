@@ -70,6 +70,8 @@ int Db_Api::retrieveQuestions(int t_amount,int t_category,const string& t_diffic
     readBuffer=replaceAll(readBuffer,"&scaron;","Š");
     readBuffer=replaceAll(readBuffer,"&Eacute;","É");
     readBuffer=replaceAll(readBuffer,"&eacute;","é");
+    readBuffer=replaceAll(readBuffer,"&deg;","°");
+    readBuffer=replaceAll(readBuffer,"\\/","/");
 
     parseQuestions(readBuffer,t_amount);
 

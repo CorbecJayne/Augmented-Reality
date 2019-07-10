@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
     start = clock();
 
     while (true){
-        duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+        duration = (( std::clock() - start ) / (double) CLOCKS_PER_SEC)*2;
         //only 10 questions
         if(i>=10){
             break;
@@ -135,7 +135,7 @@ int main(int argc, char* argv[]) {
         //detect markers
 
         cap >> frame;
-        tuple<Mat,vector<Player> > result = tracking.detect_markers(frame, question, camera_width, camera_height);
+        tuple<Mat,vector<Player> > result = tracking.detect_markers(frame, question, camera_width, camera_height,(int)(timeForQuestion-duration+1));
         vector<Player> new_infos = get<1>(result);
         //imshow(Wname, frame);
 
