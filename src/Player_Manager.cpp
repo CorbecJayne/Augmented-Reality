@@ -26,10 +26,12 @@ void Player_Manager::give_score(int correct_area) {
         }
     }
     // last player
-    players.back().add_points(score);
+    if(players.back().get_area() == correct_area){
+        players.back().add_points(score);
+    }
 }
 
-const vector<Player> &Player_Manager::get_players() const {
+vector<Player> &Player_Manager::get_players(){
     return players;
 }
 
@@ -105,7 +107,7 @@ void Player_Manager::update_player_info(Point2f& center, const vector<Player>& n
                 }
 
                     // player has choosen his answer
-                else if(difftime(info.get_time(), found_player.get_time()) >= 50000){ // difftime() result in seconds
+                else if(difftime(info.get_time(), found_player.get_time()) >= 5){ // difftime() result in seconds
                     found_player.lock_in();
                 }
 

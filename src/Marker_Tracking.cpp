@@ -31,7 +31,7 @@ Mat videoStreamFrameGray;
 Mat videoStreamFrameOutput;
 
 
-tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Question& question, int camera_width, int camera_height, int timer) {
+tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Question& question, int camera_width, int camera_height, int timer, bool show_answer) {
 
 	vector<Player> output;
 
@@ -651,7 +651,21 @@ tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Quest
 
     time_t timestamp = time(nullptr);
 
-    //display boxes
+	draw_board(question, camera_width, camera_height, timer, imgFiltered, show_answer);
+
+    if(distinct_marker_ids.size()==result_matrix_vec.size()) {
+        for (int i = 0; i < distinct_marker_ids.size(); i++) {
+            Player nextPlayer = Player(marker_positions[i], distinct_marker_ids[i], timestamp, result_matrix_vec[i]);
+            output.push_back(nextPlayer);
+        }
+    }
+
+	return make_tuple(imgFiltered,output);
+}
+
+void Marker_Tracking::draw_board(const Question& question, int camera_width, int camera_height, int timer, Mat imgFiltered, bool show_answer){
+	Scalar text_color = cvScalar(136, 0, 214);
+	    //display boxes
     line(imgFiltered, Point(camera_width/2,camera_height/6+1), Point(camera_width/2,camera_height), (0,255,0), 5);
     line(imgFiltered, Point(0,camera_height/12*7), Point(camera_width,camera_height/12*7), (0,255,0), 5);
     line(imgFiltered, Point(0,camera_height/6), Point(camera_width,camera_height/6), (0,255,0), 2);
@@ -674,7 +688,7 @@ tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Quest
 
 
     //display question in top box
-    renderText(imgFiltered,question.getQuestion(),10,20,80);
+    renderText(imgFiltered,question.getQuestion(),10,20,80, text_color);
 
     //display answers in 4 boxes
     vector<string> answers;
@@ -684,34 +698,41 @@ tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Quest
     auto rng = default_random_engine {};
     std::shuffle(begin(answers), end(answers), rng);
 
-    for(int j=0;j<4;j++){
-        String toDisplay;
-        if(j==question.getCorrectPosition()){
-            toDisplay=question.getCorrectAnswer();
-        }else{
-            toDisplay=answers.at(answers.size()-1);
-            answers.pop_back();
-        }
-        if(j==0){
-            renderText(imgFiltered,toDisplay,20,450,38);
-        }else if(j==1){
-            renderText(imgFiltered,toDisplay,760,450,38);
-        }else if (j==2){
-            renderText(imgFiltered,toDisplay,20,150,38);
-        }else{
-            renderText(imgFiltered,toDisplay,760,150,38);
-        }
-
-    }
-
-    if(distinct_marker_ids.size()==result_matrix_vec.size()) {
-        for (int i = 0; i < distinct_marker_ids.size(); i++) {
-            Player nextPlayer = Player(marker_positions[i], distinct_marker_ids[i], timestamp, result_matrix_vec[i]);
-            output.push_back(nextPlayer);
-        }
-    }
-
-	return make_tuple(imgFiltered,output);
+	Scalar correct_color = cvScalar(31, 148, 37);
+	for(int j=0;j<4;j++){
+		String toDisplay;
+		bool is_correct = false;
+		Scalar color_fill = text_color;
+		if(j==question.getCorrectPosition()){
+			toDisplay=question.getCorrectAnswer();
+			if(show_answer) is_correct = true;
+		}else{
+			toDisplay=answers.at(answers.size()-1);
+			answers.pop_back();
+		}
+		/* bottom_left	:   0
+	 	* bottom_right 	:   1
+	 	* top_left  	:   2
+	 	* top_right 	:   3
+	 	*/ 
+		if(j==0){ //lu
+			if(is_correct) color_fill = correct_color;
+			else color_fill = text_color;
+			renderText(imgFiltered,toDisplay,20,450,38, color_fill);
+		}else if(j==1){ //ru
+			if(is_correct) color_fill = correct_color;
+			else color_fill = text_color;
+			renderText(imgFiltered,toDisplay,760,450,38, color_fill);
+		}else if (j==2){ // lo
+			if(is_correct) color_fill = correct_color;
+			else color_fill = text_color;
+			renderText(imgFiltered,toDisplay,20,150,38, color_fill);
+		}else{ //ro
+			if(is_correct) color_fill = correct_color;
+			else color_fill = text_color;
+			renderText(imgFiltered,toDisplay,760,150,38, color_fill);
+		}
+	}
 }
 
 
@@ -781,8 +802,7 @@ Mat Marker_Tracking::calculate_Stripe(double dx, double dy, MyStrip & st) {
 	return Mat(stripeSize, CV_8UC1);
 }
 
-
-void Marker_Tracking::renderText(Mat imgFiltered, string str, int x_start, int y_start,int size){
+void Marker_Tracking::renderText(Mat imgFiltered, string str, int x_start, int y_start,int size, Scalar color){
     vector<string> words;
     int oldIndex=0;
     for (int j = 0; j < str.size(); j++) {
@@ -807,7 +827,7 @@ void Marker_Tracking::renderText(Mat imgFiltered, string str, int x_start, int y
     lines.push_back(stream.str());
     for(int j=0;j<lines.size();j++) {
         putText(imgFiltered, lines[j], cvPoint(x_start, y_start + j * 20),
-                CV_FONT_NORMAL, 0.8, cvScalar(136, 0, 214), 1, CV_AA);
+                CV_FONT_NORMAL, 0.8, color, 1, CV_AA);
     }
 }
 

@@ -8,6 +8,7 @@
 #include <functional>
 #include <opencv2/opencv.hpp>
 
+bool compare_players_scores(const Player& one,const Player& two);
 
 class Player_Manager{
 	
@@ -30,7 +31,7 @@ class Player_Manager{
 	 * 
 	 * @return const std::vector<Player>& 
 	 */
-    const std::vector<Player> &get_players() const;
+    std::vector<Player> &get_players();
 
 	/**
 	 * @brief Set the players

@@ -18,11 +18,13 @@ class Marker_Tracking {
 
 public:
 	// returns all currently detected markers
-    std::tuple<cv::Mat,std::vector<Player>>detect_markers(cv::Mat&,const Question& question, int camera_width, int camera_height,int timer);
+    std::tuple<cv::Mat,std::vector<Player>>detect_markers(cv::Mat&,const Question& question, int camera_width, int camera_height,int timer, bool show_answer);
 
 	cv::Mat calculate_Stripe(double dx, double dy, MyStrip & st);
 
 	int subpixSampleSafe(const cv::Mat& pSrc, const cv::Point2f& p);
 
-    void renderText(cv::Mat imgFiltered, std::string str, int x_start, int y_start,int size);
+    void renderText(cv::Mat imgFiltered, std::string str, int x_start, int y_start,int size, cv::Scalar color);
+
+	void draw_board(const Question& question, int camera_width, int camera_height, int timer, cv::Mat imgFiltered, bool show_answer);
 };

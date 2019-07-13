@@ -99,7 +99,9 @@ int main(int argc, char* argv[]) {
 	center.y = 1/12 * camera_height;
 
     Question question = db.getNextQuestion();
-    cout<<question.to_string()<<endl;
+    // cout<<question.to_string()<<endl;
+    cout<<"Quizzar"<<endl;
+    cout<<"Have Fun!"<<endl;
 
     int i=0;
 
@@ -110,6 +112,7 @@ int main(int argc, char* argv[]) {
     start = clock();
 
     while (true){
+        cap >> frame;
         duration = (( std::clock() - start ) / (double) CLOCKS_PER_SEC)*2;
         //only 10 questions
         if(i>=9){
@@ -118,6 +121,35 @@ int main(int argc, char* argv[]) {
         //if all locked in
         if(p_manager.all_locked()||duration>timeForQuestion){
             i++;
+
+            // show answer
+            clock_t start_answer = clock();
+            double duration_result = 0;
+            // TODO: discuss -> its ugly
+            while(duration_result < 3.0){
+                cap >> frame;
+                tuple<Mat,vector<Player> > result = tracking.detect_markers(frame, question, camera_width, camera_height, 0, true);
+                
+                duration_result = (( std::clock() - start_answer ) / (double) CLOCKS_PER_SEC)*2;
+                
+                vector<vector<float>> results;
+                for(const Player& p:p_manager.get_players()){
+                    vector<float> mat (16);
+                    for(int j=0;j<16;j++){
+                        mat[j]=p.get_result_matrix()[j];
+                    }
+                    results.push_back(mat);
+
+                }
+                
+                display(window,get<0>(result),results,p_manager.get_players());
+                // Swap front and back buffers
+                glfwSwapBuffers(window);
+
+                // Poll for and process events
+                glfwPollEvents();
+            }
+
             //cout<<"correct answer : "<<question.getCorrectAnswer()<<endl;
             //retrieve question
             question = db.getNextQuestion();
@@ -127,6 +159,12 @@ int main(int argc, char* argv[]) {
 
             //add points depending on if correct & order
             p_manager.give_score(question.getCorrectPosition());
+
+            // draw results()
+            sort(p_manager.get_players().rbegin(),p_manager.get_players().rend(), compare_players_scores);
+            for(Player p:p_manager.get_players()){
+                cout<<"player id "<<p.get_player_id()<<" with score "<<p.get_points() << endl;
+            }
 
             //reset players
             p_manager.reset_players();
@@ -139,8 +177,7 @@ int main(int argc, char* argv[]) {
 
         //detect markers
 
-        cap >> frame;
-        tuple<Mat,vector<Player> > result = tracking.detect_markers(frame, question, camera_width, camera_height,(int)(timeForQuestion-duration+1));
+        tuple<Mat,vector<Player> > result = tracking.detect_markers(frame, question, camera_width, camera_height,(int)(timeForQuestion-duration+1), false);
         vector<Player> new_infos = get<1>(result);
         //imshow(Wname, frame);
 
@@ -172,9 +209,10 @@ int main(int argc, char* argv[]) {
     }
 
     //put this in a while loop with a waitkey or timeout
-   // draw_results();
+    // draw_results();
+    cout<< "Summary" << endl;
     for(Player p:p_manager.get_players()){
-        cout<<"player id "<<p.get_player_id()<<" with score "<<p.get_points();
+        cout<<"player id "<<p.get_player_id()<<" with score "<<p.get_points() << endl;
     }
 
     // Important -> Avoid memory leaks!
@@ -272,7 +310,7 @@ void display(GLFWwindow* window, const cv::Mat &img_bgr, const vector<vector<flo
         // Rotate 90 desgress in x-direction
         glRotatef(-90, 1, 0, 0);
         // Scale down!
-        glScalef(0.02, 0.02, 0.02);
+        glScalef(0.015, 0.015, 0.015);
 
         draw_player(counter);
     }
