@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
     // [m]
 
 	Mat frame;
-	VideoCapture cap(0);
+	VideoCapture cap(1); // build in:0 extern: 1
     cap.set(CV_CAP_PROP_FRAME_WIDTH, camera_width); //changed for different width and height
 	cap.set(CV_CAP_PROP_FRAME_HEIGHT, camera_height);
 	
@@ -160,9 +160,8 @@ int main(int argc, char* argv[]) {
 
             // draw results()
             sort(p_manager.get_players().rbegin(),p_manager.get_players().rend(), compare_players_scores);
-            cout<<"correct area "<< question.getCorrectPosition() <<endl;
             for(Player p:p_manager.get_players()){
-                cout<<"player id "<<p.get_player_id()<<" with score "<<p.get_points() << " in area " <<p.get_area() << endl;
+                cout<<"player id "<<p.get_player_id()<<" with score "<<p.get_points() << endl;
             }
 
             //reset players
