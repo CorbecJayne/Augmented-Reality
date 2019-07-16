@@ -89,11 +89,11 @@ class Player_Manager{
 
 
 	/* uses member center to calculate area of given point returns accordingly
-	 * bottom_left	:   0
-	 * bottom_right :   1
-	 * top_left  	:   2
-	 * top_right 	:   3
-	 */
+	 * /* top_left	:   0
+	 	* top_right 	:   1
+	 	* bottom_left  	:   2
+	 	* bottom_right 	:   3
+	 	*/
 	int get_area_of_point(const cv::Point2f& p, cv::Point2f& center);
 
 

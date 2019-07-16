@@ -25,7 +25,7 @@ const int camera_height = 720;          // change to change height and width, eg
 const int virtual_camera_angle = 60;    // change to change height and width, eg from 30 to 60
 unsigned char bkgnd[camera_width * camera_height * 3]; 
 
-const double timeForQuestion = 15.0;
+const double timeForQuestion = 7.0;
 
 
 /* Program & OpenGL initialization */
@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
 	
 	//instantiate db & retrieve questions
 	Db_Api db;
-	db.retrieveQuestions();
+	db.retrieveQuestions(10,15);
 	
 	if (!cap.isOpened())
 	{
@@ -151,8 +151,6 @@ int main(int argc, char* argv[]) {
             }
 
             //cout<<"correct answer : "<<question.getCorrectAnswer()<<endl;
-            //retrieve question
-            question = db.getNextQuestion();
             //cout<<question.to_string()<<endl;
             //mark correct answer
             //	ui_manager.display(question.getCorrectAnswer());
@@ -162,14 +160,18 @@ int main(int argc, char* argv[]) {
 
             // draw results()
             sort(p_manager.get_players().rbegin(),p_manager.get_players().rend(), compare_players_scores);
+            cout<<"correct area "<< question.getCorrectPosition() <<endl;
             for(Player p:p_manager.get_players()){
-                cout<<"player id "<<p.get_player_id()<<" with score "<<p.get_points() << endl;
+                cout<<"player id "<<p.get_player_id()<<" with score "<<p.get_points() << " in area " <<p.get_area() << endl;
             }
 
             //reset players
             p_manager.reset_players();
 
             start=clock();
+
+            //retrieve new question
+            question = db.getNextQuestion();
         }
 
 

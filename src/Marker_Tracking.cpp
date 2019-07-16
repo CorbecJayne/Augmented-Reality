@@ -30,6 +30,14 @@ typedef vector<contour_t> contour_vector_t;
 Mat videoStreamFrameGray;
 Mat videoStreamFrameOutput;
 
+// cv::Scalar text_color = cvScalar(204, 0, 0); // dark blue		for light
+//cv::Scalar text_color = cvScalar(255, 204, 153); // light blue	for dark
+cv::Scalar text_color = cvScalar(0, 0, 0); // black				for light
+// cv::Scalar text_color = cvScalar(255, 255, 255); // white 			for dark
+
+// cv::Scalar line_color = cvScalar(255, 255, 255); // white		for dark
+cv::Scalar line_color = cvScalar(0, 0, 0); // black					
+
 
 tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Question& question, int camera_width, int camera_height, int timer, bool show_answer) {
 
@@ -664,11 +672,11 @@ tuple<Mat,vector<Player>> Marker_Tracking::detect_markers(Mat& input,const Quest
 }
 
 void Marker_Tracking::draw_board(const Question& question, int camera_width, int camera_height, int timer, Mat imgFiltered, bool show_answer){
-	Scalar text_color = cvScalar(136, 0, 214);
+	
 	    //display boxes
-    line(imgFiltered, Point(camera_width/2,camera_height/6+1), Point(camera_width/2,camera_height), (0,255,0), 5);
-    line(imgFiltered, Point(0,camera_height/12*7), Point(camera_width,camera_height/12*7), (0,255,0), 5);
-    line(imgFiltered, Point(0,camera_height/6), Point(camera_width,camera_height/6), (0,255,0), 2);
+    line(imgFiltered, Point(camera_width/2,camera_height/6+1), Point(camera_width/2,camera_height), line_color, 5); // (0,255,0)
+    line(imgFiltered, Point(0,camera_height/12*7), Point(camera_width,camera_height/12*7), line_color, 5);
+    line(imgFiltered, Point(0,camera_height/6), Point(camera_width,camera_height/6), line_color, 2);
 
     //display circle
     if(timer>10){
@@ -688,7 +696,7 @@ void Marker_Tracking::draw_board(const Question& question, int camera_width, int
 
 
     //display question in top box
-    renderText(imgFiltered,question.getQuestion(),10,20,80, text_color);
+    renderText(imgFiltered,question.getQuestion(),10,20,80, text_color); // 80
 
     //display answers in 4 boxes
     vector<string> answers;
@@ -698,7 +706,7 @@ void Marker_Tracking::draw_board(const Question& question, int camera_width, int
     auto rng = default_random_engine {};
     std::shuffle(begin(answers), end(answers), rng);
 
-	Scalar correct_color = cvScalar(31, 148, 37);
+	Scalar correct_color = cvScalar(0,255,0); // cvScalar(31, 148, 37);
 	for(int j=0;j<4;j++){
 		String toDisplay;
 		bool is_correct = false;
@@ -710,20 +718,20 @@ void Marker_Tracking::draw_board(const Question& question, int camera_width, int
 			toDisplay=answers.at(answers.size()-1);
 			answers.pop_back();
 		}
-		/* bottom_left	:   0
-	 	* bottom_right 	:   1
-	 	* top_left  	:   2
-	 	* top_right 	:   3
+		/* top_left	:   0
+	 	* top_right 	:   1
+	 	* bottom_left  	:   2
+	 	* bottom_right 	:   3
 	 	*/ 
-		if(j==0){ //lu
+		if(j==2){ //lu
 			if(is_correct) color_fill = correct_color;
 			else color_fill = text_color;
 			renderText(imgFiltered,toDisplay,20,450,38, color_fill);
-		}else if(j==1){ //ru
+		}else if(j==3){ //ru
 			if(is_correct) color_fill = correct_color;
 			else color_fill = text_color;
 			renderText(imgFiltered,toDisplay,760,450,38, color_fill);
-		}else if (j==2){ // lo
+		}else if (j==0){ // lo
 			if(is_correct) color_fill = correct_color;
 			else color_fill = text_color;
 			renderText(imgFiltered,toDisplay,20,150,38, color_fill);
@@ -827,7 +835,7 @@ void Marker_Tracking::renderText(Mat imgFiltered, string str, int x_start, int y
     lines.push_back(stream.str());
     for(int j=0;j<lines.size();j++) {
         putText(imgFiltered, lines[j], cvPoint(x_start, y_start + j * 20),
-                CV_FONT_NORMAL, 0.8, color, 1, CV_AA);
+                CV_FONT_NORMAL, 0.9, color, 1.2, CV_AA); //text size 0.8
     }
 }
 
