@@ -25,7 +25,7 @@ const int camera_height = 720;          // change to change height and width, eg
 const int virtual_camera_angle = 60;    // change to change height and width, eg from 30 to 60
 unsigned char bkgnd[camera_width * camera_height * 3]; 
 
-const double timeForQuestion = 7.0;
+const double timeForQuestion = 25.0;
 
 
 /* Program & OpenGL initialization */
